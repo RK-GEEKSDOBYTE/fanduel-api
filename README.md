@@ -1,9 +1,12 @@
-# fanduel-api-scrape
-API To Scrape Data From Fanduel Sportsbook
+# fanduel-api
+API To Interact With Fanduel Sportsbook Through Python Selenium
 
 ## Getting Started
 
-Placeholder
+1. Ensure you are running prerequisites listed below otherwise you will need to troubleshoot any issues that arise specific to your system setup
+1. Follow the installation guide outlined below
+1. Run code outlined in the /example folder for reference
+1. Feel free to submit a PR as contributions to this repository are welcome
 
 
 ## Prerequisites
@@ -33,10 +36,8 @@ Placeholder
 
 
 ## License
-
 Placeholder
 
 
 ## Acknowledgments
-
 Placeholder
