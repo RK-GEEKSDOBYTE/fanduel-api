@@ -40,7 +40,10 @@ def main():
         navigate.close_modal_window()
 
         # login to account
+        # close modal window
+        # close plugin
         account.login(username=username, password=password)
+        navigate.close_modal_window()
         navigate.close_plugin()
 
         # click Live group event tab
@@ -50,6 +53,16 @@ def main():
         last_login = account.get_user_information(information_type='last_login')
         session_time = account.get_user_information(information_type='session_time')
         available_funds = account.get_user_information(information_type='available_funds')
+
+        navigate.click_tab(tab_type='bet_status', tab_name='Active')
+        navigate.toggle_cashout(active=True)
+        navigate.toggle_cashout(active=False)
+        navigate.toggle_cashout(active=False)
+
+        navigate.click_tab(tab_type='bet_status', tab_name='Betslip')
+        navigate.toggle_cashout(active=True)
+        navigate.toggle_cashout(active=False)
+        navigate.toggle_cashout(active=False)
 
         # logout of account
         account.logout()

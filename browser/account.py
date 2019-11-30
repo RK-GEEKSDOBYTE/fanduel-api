@@ -65,7 +65,7 @@ class ACCOUNT:
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_form_exit_xpath)))
 
             except TimeoutException:
-                print('Login Failure: Unable To Locate Login Form Exit Image')
+                print('Login Error: Unable To Locate Login Form Exit Image')
 
                 return
 
@@ -78,7 +78,7 @@ class ACCOUNT:
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_link_xpath)))
 
             except TimeoutException:
-                print('Login Failure: Login Link Render (After Closing Login Form) Exceeded Time Limit')
+                print('Login Error: Login Link Render (After Closing Login Form) Exceeded Time Limit')
 
                 return
 
@@ -94,7 +94,7 @@ class ACCOUNT:
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_link_xpath)))
 
             except TimeoutException:
-                print('Login Failure: Unable To Locate Clickable Login Link')
+                print('Login Error: Unable To Locate Clickable Login Link')
 
                 return False
 
@@ -107,7 +107,7 @@ class ACCOUNT:
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.presence_of_element_located((By.XPATH, self.login_form_xpath)))
 
             except TimeoutException:
-                print('Login Failure: Form Render Exceeded Time Limit')
+                print('Login Error: Form Render Exceeded Time Limit')
 
                 return False
 
@@ -117,7 +117,7 @@ class ACCOUNT:
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_password_field_xpath)))
 
             except TimeoutException:
-                print('Login Failure: Unable To Locate Clickable Username/Password Fields')
+                print('Login Error: Unable To Locate Clickable Username/Password Fields')
                 self.close_login_form()
 
                 return False
@@ -133,7 +133,7 @@ class ACCOUNT:
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_submit_button_xpath)))
 
             except TimeoutException:
-                print('Login Failure: Unable To Locate Clickable Submit Button')
+                print('Login Error: Unable To Locate Clickable Submit Button')
                 self.close_login_form()
 
                 return False
@@ -147,7 +147,7 @@ class ACCOUNT:
                     lambda driver: driver.find_elements(By.XPATH, self.logged_in_xpath) or driver.find_elements(By.XPATH, self.invalid_credentials_xpath))
 
             except TimeoutException:
-                print('Login Failure: Submission Exceeded Time Limit')
+                print('Login Error: Submission Exceeded Time Limit')
                 self.close_login_form()
 
                 return False
@@ -159,15 +159,15 @@ class ACCOUNT:
                 return True
 
             elif self.driver.find_elements_by_xpath(self.invalid_credentials_xpath):
-                print('Login Failure: Invalid Credentials')
+                print('Login Error: Invalid Credentials')
                 self.close_login_form()
 
                 return False
 
         elif not username or not password:
-            print('Login Failure: Username And/Or Password Not Provided')
+            print('Login Error: Username And/Or Password Not Provided')
         elif self.check_logged_in():
-            print('Login Failure: User Already Logged In')
+            print('Login Error: User Already Logged In')
 
         return False
 
@@ -183,7 +183,7 @@ class ACCOUNT:
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.account_menu_xpath)))
 
             except TimeoutException:
-                print('Login Failure: Unable To Locate Clickable Account Menu')
+                print('Login Error: Unable To Locate Clickable Account Menu')
 
                 return False
 
@@ -196,7 +196,7 @@ class ACCOUNT:
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.logout_link_xpath)))
 
             except:
-                print('Logout Failure: Unable To Locate Clickable Logout Account Menu Item')
+                print('Logout Error: Unable To Locate Clickable Logout Account Menu Item')
                 account_menu.click()
 
                 return False
@@ -210,7 +210,7 @@ class ACCOUNT:
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.logout_confirmation_button_xpath)))
 
             except:
-                print('Logout Failure: Unable To Locate Clickable Logout Confirmation Button')
+                print('Logout Error: Unable To Locate Clickable Logout Confirmation Button')
 
                 return False
 
@@ -224,12 +224,12 @@ class ACCOUNT:
                 print('Logout SuccessFul')
 
             except:
-                print('Logout Failure: Unable To Locate Clickable Login Link')
+                print('Logout Error: Unable To Locate Clickable Login Link')
 
                 return False
 
         else:
-            print('Logout Failure: User Not Logged In')
+            print('Logout Error: User Not Logged In')
 
         return False
 
@@ -255,12 +255,12 @@ class ACCOUNT:
                 return information
 
             else:
-                print('User Information Failure: Unable To Locate Information')
+                print('User Information Error: Unable To Locate Information')
 
         elif information_type not in self.information_type_xpaths:
-            print('User Information Failure: Need To Provide Valid Information Type')
+            print('User Information Error: Need To Provide Valid Information Type')
         elif not self.check_logged_in():
-            print('User Information Failure: User Not Logged In')
+            print('User Information Error: User Not Logged In')
 
         return None
 

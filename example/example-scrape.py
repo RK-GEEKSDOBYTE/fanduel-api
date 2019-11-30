@@ -20,9 +20,10 @@ dci = config.data_collection_int
 dh = config.driver_headless
 dl = config.driver_location
 url = config.url
-sa = {key: item['active'] for key, item in config.sports.items()}
-shc = {key: item['html_class'] for key, item in config.sports.items()}
-sm = {key: item['minute_logged'] for key, item in config.sports.items()}
+sa = {k: v['active'] for k, v in config.sports.items() if v['active'] == True}
+shc = {k: v['html_class'] for k, v in  config.sports.items() if k in sa}
+sml = {k: v['minute_logged'] for k, v in  config.sports.items() if k in sa}
+sa = {k: v for k, v in sa.items() if k in shc and k in sml}
 
 
 def main():
@@ -30,7 +31,7 @@ def main():
 	# create driver object
 	driver = dri.DRIVER(browser_refresh_int=bri, driver_headless=dh, driver_location=dl, url=url)
 	navigate = nav.NAVIGATE(driver=driver.driver)
-	scrape = scp.SCRAPE(driver=driver.driver, sports_active=sa, sports_html_classes=shc, sports_minute_logged=sm)
+	scrape = scp.SCRAPE(driver=driver.driver)
 
 	try:
 		# close modal window
@@ -55,7 +56,7 @@ def main():
 			# log time to start data collection
 			# scrape webpage for active events
 			data_collection_start_time = time.time()
-			data = scp.SCRAPE(driver=driver.driver, sports_active=sa, sports_html_classes=shc, sports_minute_logged=sm).get_all_events_info()
+			data = scrape.get_all_events_info(sports_active=sa, sports_html_classes=shc, sports_minute_logged=sml)
 			print('{} --- Found {} record(s)'.format(datetime.now().time(), len(data)))
 
 			# log time to finish data collection

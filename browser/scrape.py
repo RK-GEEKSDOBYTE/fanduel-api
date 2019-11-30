@@ -41,6 +41,7 @@ class EVENT:
 		self.under_odds = None
 		self.tie_moneyline = None
 
+
 	# removes characters not allowed with float type (allows periods and negative characters)
 	def float_regex(self, input):
 
@@ -76,19 +77,19 @@ class EVENT:
 
 
 	# get data for event
-	def get_event_info_html(self, soup):
+	def get_event_info_html(self, event_html):
 
 		# get core betting data (should always exist)
-		self.game_info = soup.find('section', {'class': 'single-coupon-footer'})
-		self.team_name_info = soup.find_all('span', {'class': 'name'})
-		self.team_score_info = soup.find_all('td', {'class': 'score-value'})
+		self.game_info = event_html.find('section', {'class': 'single-coupon-footer'})
+		self.team_name_info = event_html.find_all('span', {'class': 'name'})
+		self.team_score_info = event_html.find_all('td', {'class': 'score-value'})
 
 		# check if no markets (betting options) are available and store data in database to track scores (even if missing)
-		if not soup.find('section', {'class': 'nomarkets'}):
+		if not event_html.find('section', {'class': 'nomarkets'}):
 
 			# check if spread data is available
-			if soup.find('div', {'class': 'market points'}):
-				self.spread_info = soup.find('div', {'class': 'market points'}).find_all('div', {'class': 'currenthandicap'})
+			if event_html.find('div', {'class': 'market points'}):
+				self.spread_info = event_html.find('div', {'class': 'market points'}).find_all('div', {'class': 'currenthandicap'})
 
 				# check if spread information is available
 				if self.spread_info:
@@ -96,27 +97,30 @@ class EVENT:
 					del self.spread_info[1]
 
 			# check if moneyline information is available
-			if soup.find('div', {'class': 'market money'}):
-				self.moneyline_info = soup.find('div', {'class': 'market money'}).find_all('div', {'class': 'selectionprice'})
+			if event_html.find('div', {'class': 'market money'}):
+				self.moneyline_info = event_html.find('div', {'class': 'market money'}).find_all('div', {'class': 'selectionprice'})
 
 			# check if over/under information is available
-			if soup.find('div', {'class': 'market total'}):
-				self.over_under_info = soup.find('div', {'class': 'market total'}).find_all('div', {'class': 'uo-currenthandicap'})
+			if event_html.find('div', {'class': 'market total'}):
+				self.over_under_info = event_html.find('div', {'class': 'market total'}).find_all('div', {'class': 'uo-currenthandicap'})
 
 			# check if spread odds information is available and not suspended
-			if soup.find('div', {'class': 'market points'}):
-				if not soup.find('div', {'class': 'market points'}).find('div', {'class': 'selectionprice suspended'}):
-					self.spread_info_odds = soup.find('div', {'class': 'market points'}).find_all('div', {'class': 'selectionprice'})
+			if event_html.find('div', {'class': 'market points'}):
+
+				if not event_html.find('div', {'class': 'market points'}).find('div', {'class': 'selectionprice suspended'}):
+					self.spread_info_odds = event_html.find('div', {'class': 'market points'}).find_all('div', {'class': 'selectionprice'})
 
 			# check if over/under odds information is available and not suspended
-			if soup.find('div', {'class': 'market total'}):
-				if not soup.find('div', {'class': 'market total'}).find('div', {'class': 'selectionprice suspended'}):
-					self.over_under_info_odds =  soup.find('div', {'class': 'market total'}).find_all('div', {'class': 'selectionprice'})
+			if event_html.find('div', {'class': 'market total'}):
+
+				if not event_html.find('div', {'class': 'market total'}).find('div', {'class': 'selectionprice suspended'}):
+					self.over_under_info_odds =  event_html.find('div', {'class': 'market total'}).find_all('div', {'class': 'selectionprice'})
 
 			# check if result odds information is available and not suspended
-			if soup.find('div', {'class': 'three-and-more-selections'}):
-				if not soup.find('div', {'class': 'suspended three-and-more-selections'}):
-					self.result_info_odds = soup.find_all('div', {'class': 'selectionprice'})
+			if event_html.find('div', {'class': 'three-and-more-selections'}):
+
+				if not event_html.find('div', {'class': 'suspended three-and-more-selections'}):
+					self.result_info_odds = event_html.find_all('div', {'class': 'selectionprice'})
 
 
 	# get event logistics information
@@ -166,10 +170,9 @@ class EVENT:
 			self.home_team_spread = float(home_team_spread) if self.is_float(home_team_spread) else self.home_team_spread
 
 		# check if team spread odds information exists
+		# use regular expressions (regex) to remove nun-numeric characters
+		# convert values scraped to int if int type
 		if self.spread_info_odds:
-
-			# use regular expressions (regex) to remove nun-numeric characters
-			# convert values scraped to int if int type
 			away_team_spread_odds = self.int_regex(self.spread_info_odds[0].text)
 			home_team_spread_odds = self.int_regex(self.spread_info_odds[1].text)
 			self.away_team_spread_odds = int(away_team_spread_odds) if self.is_int(away_team_spread_odds) else self.away_team_spread_odds
@@ -226,84 +229,74 @@ class EVENT:
 class SCRAPE():
 
 
-	def __init__(self, driver, sports_active={}, sports_html_classes={}, sports_minute_logged={}):
+	def __init__(self, driver):
 		self.driver = driver
-		self.sports_active = sports_active
-		self.sports_html_classes = sports_html_classes
-		self.sports_minute_logged = sports_minute_logged
 
 
 	# get category (sport) HTML
-	def get_event_category_html(self, soup, sport, sport_html_class):
+	def get_event_category_html(self, html, sport, sport_html_class):
 
-		# create empty BeautifulSoup object (future requirements if nothing found)
 		# find live event categories
-		sport_live_event_category_html = BeautifulSoup('', 'html.parser')
-		live_event_categories_html = soup.find_all('div', {'class': 'live-event-container'})
+		live_event_categories_html = html.find_all('div', {'class': 'live-event-container'})
 
 		# iterate through live event categories
-		# check if desired sport found
 		for live_event_category_html in live_event_categories_html:
-			if live_event_category_html.header.section.h4('span')[2].text == sport:
-				sport_live_event_category_html = live_event_category_html
 
-		# return events within event category
-		return sport_live_event_category_html.find_all('div', {'class': sport_html_class})
+			# check if desired sport found
+			if live_event_category_html.header.section.h4('span')[2].text == sport:
+
+				return live_event_category_html.find_all('div', {'class': sport_html_class})
+
+		return None
 
 
 	# get information for events
-	def get_all_events_info(self):
+	def get_all_events_info(self, sports_active, sports_html_classes, sports_minute_logged):
 
-		soup = BeautifulSoup(self.driver.page_source, 'html.parser')
-
+		# convert html to BeautifulSoup object
 		# create empty list to store data
-		# identify active sports to scrape (specified in the configuration file)
+		html = BeautifulSoup(self.driver.page_source, 'html.parser')
 		data = []
-		sports_active = [k for k, v in self.sports_active.items() if v == True]
-		sports_html_classes = {k: v for k, v in self.sports_html_classes.items() if k in sports_active}
-		sports_minute_logged = {k: v for k, v in self.sports_minute_logged.items() if k in sports_active}
 
 		# loop through all active sports
-		for key in sports_active:
+		for sport in sports_active:
 
-			# define sport variables
-			# create live event class object
-			sport = key
-			sport_html_class = sports_html_classes[key]
-			sport_minute_logged = sports_minute_logged[key]
-			live_event_info = EVENT()
+			# get sport html class and minute logged flag
+			# get live events for sport
+			sport_html_class = sports_html_classes[sport]
+			sport_minute_logged = sports_minute_logged[sport]
+			events_html = self.get_event_category_html(html=html, sport=sport, sport_html_class=sport_html_class)
 
-			# iterate through all live events of a sport
-			for live_event_html in self.get_event_category_html(soup=soup, sport=sport, sport_html_class=sport_html_class):
+			# check if live events exist for sport
+			if events_html:
 
-				# gets live event information
-				live_event_info.get_event_info_html(live_event_html)
-				live_event_info.get_time_info()
-				live_event_info.get_team_info()
-				live_event_info.get_over_under_info()
+				# iterate through all live events of a sport
+				for event_html in events_html:
 
-				# default minute to 0
-				if not sport_minute_logged:
-					live_event_info.minute = None
+					# create live event class object
+					# gets live event information
+					event_info = EVENT()
+					event_info.get_event_info_html(event_html=event_html)
+					event_info.get_time_info()
+					event_info.get_team_info()
+					event_info.get_over_under_info()
 
-				# create object to store event logistics information
-				log_rules = [
-							live_event_info.period,
-							live_event_info.away_team_name,
-							live_event_info.home_team_name,
-							live_event_info.away_team_score is not None,
-							live_event_info.home_team_score is not None,
-							(sport_minute_logged and live_event_info.minute) or sport_minute_logged == False,
-							]
+					# default minute to 0 if minute not logged in sport
+					event_info.minute = None if not sport_minute_logged else event_info.minute
 
-				# check if rules met to log data
-				# add data to list
-				if all(log_rules):
-					data.append([datetime.now().strftime('%Y-%m-%d'), datetime.now(), sport_html_class, sport, live_event_info.period, live_event_info.minute,
-									live_event_info.away_team_name, live_event_info.home_team_name, live_event_info.away_team_score, live_event_info.home_team_score,
-									live_event_info.away_team_spread, live_event_info.away_team_spread_odds, live_event_info.home_team_spread,
-									live_event_info.home_team_spread_odds, live_event_info.away_team_moneyline, live_event_info.home_team_moneyline,
-									live_event_info.over, live_event_info.over_odds, live_event_info.under, live_event_info.under_odds, live_event_info.tie_moneyline])
+					# create object to store event logistics information
+					log_rules = [event_info.period, event_info.away_team_name, event_info.home_team_name, event_info.away_team_score is not None,
+								event_info.home_team_score is not None, (sport_minute_logged and event_info.minute) or sport_minute_logged == False]
+
+					# check if rules met to log data
+					if all(log_rules):
+
+						# add data to list
+						data.append([datetime.now().strftime('%Y-%m-%d'), datetime.now(), sport_html_class, sport, event_info.period, event_info.minute,
+										event_info.away_team_name, event_info.home_team_name, event_info.away_team_score, event_info.home_team_score,
+										event_info.away_team_spread, event_info.away_team_spread_odds, event_info.home_team_spread,
+										event_info.home_team_spread_odds, event_info.away_team_moneyline, event_info.home_team_moneyline,
+										event_info.over, event_info.over_odds, event_info.under, event_info.under_odds, event_info.tie_moneyline])
 
 		return data
 
