@@ -11,11 +11,6 @@ class CONFIG:
 										'html_class': 'BASKETBALL',
 										'minute_logged': True
 										},
-				'College Basketball': 	{
-										'active': True,
-										'html_class': 'BASKETBALL',
-										'minute_logged': True
-										},
 				'NFL': 					{
 										'active': True,
 										'html_class': 'NFL',

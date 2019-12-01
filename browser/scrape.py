@@ -233,39 +233,34 @@ class SCRAPE():
 		self.driver = driver
 
 
-	# get category (sport) HTML
-	def get_event_category_html(self, html, sport, sport_html_class):
-
-		# find live event categories
-		live_event_categories_html = html.find_all('div', {'class': 'live-event-container'})
-
-		# iterate through live event categories
-		for live_event_category_html in live_event_categories_html:
-
-			# check if desired sport found
-			if live_event_category_html.header.section.h4('span')[2].text == sport:
-
-				return live_event_category_html.find_all('div', {'class': sport_html_class})
-
-		return None
-
-
 	# get information for events
 	def get_all_events_info(self, sports_active, sports_html_classes, sports_minute_logged):
 
 		# convert html to BeautifulSoup object
+		# find live event categories
 		# create empty list to store data
 		html = BeautifulSoup(self.driver.page_source, 'html.parser')
+		live_event_categories_html = html.find_all('div', {'class': 'live-event-container'})
 		data = []
 
 		# loop through all active sports
 		for sport in sports_active:
 
+			# create default variables
+			events_html = None
+
 			# get sport html class and minute logged flag
 			# get live events for sport
 			sport_html_class = sports_html_classes[sport]
 			sport_minute_logged = sports_minute_logged[sport]
-			events_html = self.get_event_category_html(html=html, sport=sport, sport_html_class=sport_html_class)
+
+			# iterate through live event categories
+			for live_event_category_html in live_event_categories_html:
+
+				# check if desired sport found
+				if live_event_category_html.header.section.h4('span')[2].text == sport:
+					events_html = live_event_category_html.find_all('div', {'class': sport_html_class})
+					break
 
 			# check if live events exist for sport
 			if events_html:
