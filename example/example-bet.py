@@ -8,6 +8,7 @@ from config import config as cfg
 from browser import driver as dri
 from browser import navigate as nav
 from browser import account as act
+from browser import bet as bt
 
 # define static variables
 username = ''
@@ -49,12 +50,21 @@ def main():
         navigate.close_plugin()
         navigate.click_tab(tab_type='event_group', tab_name='Live')
 
+        # check if logged in
         # attempt to submit bet
-        bet.submit(bet_amount=1, league='NHL', team_name='Nashville Predators', compare_bet_type_value=200, bet_type='moneyline', type='less')
+        # attempt to submit bet
+        if account.check_logged_in():
+            bet.submit(bet_amount=1, league='NHL', team_name='Edmonton Oilers', compare_bet_type_value=600, bet_type='moneyline', type='less')
+            account.logout()
 
-        # logout of account
-        account.logout()
+    except Exception as e:
+        print(str(e))
+
+		# check if driver instance exists
+		# close current driver instance windows
+        if driver.driver:
+            driver.driver.quit()
 
 
 if __name__ == '__main__':
-	main()
+    main()
