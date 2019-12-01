@@ -69,6 +69,9 @@ def main():
 			if cycle_duration < dci:
 				time.sleep(dci - cycle_duration)
 
+        # close current driver instance windows
+        driver.driver.quit()
+
 	except Exception as e:
 		print(str(e))
 

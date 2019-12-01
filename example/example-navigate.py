@@ -49,6 +49,9 @@ def main():
         navigate.click_tab(tab_type='bet_type', tab_name='Standard')
         navigate.click_tab(tab_type='bet_type', tab_name='Teaser')
 
+        # close current driver instance windows
+        driver.driver.quit()
+
     except Exception as e:
         print(str(e))
 

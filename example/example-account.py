@@ -54,11 +54,18 @@ def main():
         session_time = account.get_user_information(information_type='session_time')
         available_funds = account.get_user_information(information_type='available_funds')
 
+        # print account information
+        print('Last Login: {}'.format(last_login))
+        print('Session Time: {}'.format(session_time))
+        print('Avaiable Funds: {}'.format(available_funds))
+
+        # toggle active bets that can be cashed out
         navigate.click_tab(tab_type='bet_status', tab_name='Active')
         navigate.toggle_cashout(active=True)
         navigate.toggle_cashout(active=False)
         navigate.toggle_cashout(active=False)
 
+        # toggle active bets that can be cashed out
         navigate.click_tab(tab_type='bet_status', tab_name='Betslip')
         navigate.toggle_cashout(active=True)
         navigate.toggle_cashout(active=False)
@@ -66,6 +73,9 @@ def main():
 
         # logout of account
         account.logout()
+
+        # close current driver instance windows
+        driver.driver.quit()
 
 
     except Exception as e:

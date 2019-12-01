@@ -57,6 +57,9 @@ def main():
             bet.submit(bet_amount=1, league='NHL', team_name='Edmonton Oilers', compare_bet_type_value=600, bet_type='moneyline', type='less')
             account.logout()
 
+        # close current driver instance windows
+        driver.driver.quit()
+
     except Exception as e:
         print(str(e))
 

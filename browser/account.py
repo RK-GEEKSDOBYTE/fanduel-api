@@ -249,7 +249,7 @@ class ACCOUNT:
             # remove label from information
             if self.driver.find_elements_by_xpath(information_type_xpath):
                 label_information = self.driver.find_element_by_xpath(information_type_xpath).text
-                information = label_information[len(information_type_label_remove) + 1: ]
+                information = label_information[len(information_type_label_remove): ]
                 print('{} Information Retrieval Successful'.format(information_type.replace('_', ' ').title()))
 
                 return information
