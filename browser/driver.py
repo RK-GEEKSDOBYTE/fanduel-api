@@ -19,15 +19,17 @@ class DRIVER:
 		self.driver_location = driver_location
 		self.url = url
 
+		# create webdriver instance
+		# log initial time to track browser refresh requirement
 		self.connect()
 		self.browser_refresh_complete_time = time.time()
 
 
-	# create Chrome webdriver instance
+	# create webdriver instance
 	def connect(self):
 
-		# set headless attribute (True improves performance but won't be visible)
-		# set window size attribute (ensures consistency across devices)
+		# set headless attribute
+		# set window size attribute to ensure consistency across devices
 		options = Options()
 		options.headless = self.driver_headless
 		options.add_argument('window-size=1200,1100')
@@ -51,11 +53,14 @@ class DRIVER:
 		return True
 
 
-	# refresh browser (ensures client-side continues updating webpage through API calls)
+	# refresh browser to ensure client-side continues updating webpage through API calls
 	def browser_refresh(self):
 
 		# refresh browser
+		# log browser refresh completed time
 		self.driver.refresh()
+		print('Driver API Success: Refreshed Web Driver')
+		self.browser_refresh_complete_time = time.time()
 
 
 	# check if browser refresh is required
@@ -64,12 +69,10 @@ class DRIVER:
 		# calculate time elapsed since driver creation or last refresh
 		time_elapsed = time.time() - self.browser_refresh_complete_time
 
-		# check if time elapsed is greater than webpage refresh interval
+		# check if time elapsed is greater than browser refresh interval
 		# refresh webpage
-		# log browser refresh completed time
 		if time_elapsed > self.browser_refresh_int:
 			self.browser_refresh()
-			self.browser_refresh_complete_time = time.time()
 
 			return True
 

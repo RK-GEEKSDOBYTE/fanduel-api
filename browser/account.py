@@ -47,7 +47,7 @@ class ACCOUNT:
     # check if user logged in
     def check_logged_in(self):
 
-        # check if xpath that only appears when user is logged in exists
+        # check if user logged in xpath exists
         if self.driver.find_elements_by_xpath(self.logged_in_xpath):
             return True
 
@@ -61,24 +61,24 @@ class ACCOUNT:
         if self.driver.find_elements_by_xpath(self.login_form_exit_xpath):
 
             try:
-                # wait for login form exit image to be cliackable
+                # wait for login form exit to be cliackable
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_form_exit_xpath)))
 
             except TimeoutException:
-                print('Login Error: Unable To Locate Login Form Exit Image')
+                print('Account API Error: Unable To Locate Clickable Exit Button On Login Form')
 
                 return
 
             try:
-                # create login form exit image object
-                # click login form exit image
+                # create login form exit object
+                # click login form exit
                 # wait for login link to be cliackable
                 login_form_exit_image = self.driver.find_element_by_xpath(self.login_form_exit_xpath)
                 login_form_exit_image.click()
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_link_xpath)))
 
             except TimeoutException:
-                print('Login Error: Login Link Render (After Closing Login Form) Exceeded Time Limit')
+                print('Account API Error: Unable To Locate Clickable Login Link After Closing Login Form')
 
                 return
 
@@ -86,46 +86,48 @@ class ACCOUNT:
     # log user into account
     def login(self, username, password):
 
-        # check if user has provied provided credentials and if user is not already logged in
+        # check if user has provied provided credentials
+        # check if user is already logged in
         if username and password and not self.check_logged_in():
 
             try:
-                # wait for login link to be cliackable
+                # wait for login link to be clickable
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_link_xpath)))
 
             except TimeoutException:
-                print('Login Error: Unable To Locate Clickable Login Link')
+                print('Account API Error: Unable To Locate Clickable Login Link')
 
                 return False
 
             try:
                 # create login link object
-                # click link
-                # wait for username/password field to be cliackable
+                # click login link
+                # wait for login form xpath to exist
                 login_link = self.driver.find_element_by_xpath(self.login_link_xpath)
                 login_link.click()
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.presence_of_element_located((By.XPATH, self.login_form_xpath)))
 
             except TimeoutException:
-                print('Login Error: Form Render Exceeded Time Limit')
+                print('Account API Error: Login Form Render Exceeded Time Limit')
 
                 return False
 
             try:
-                # wait for username/password field to be cliackable
+                # wait for username/password fields to be cliackable
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_username_field_xpath)))
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_password_field_xpath)))
 
             except TimeoutException:
-                print('Login Error: Unable To Locate Clickable Username/Password Fields')
+                # close login form
+                print('Account API Error: Unable To Locate Clickable Username/Password Fields On Login Form')
                 self.close_login_form()
 
                 return False
 
             try:
-                # create user/password field objects
-                # populate form fields
-                # wait for submit button to become enabled
+                # create username/password field objects
+                # populate username/password fields
+                # wait for submit button to be clickable
                 username_field = self.driver.find_element_by_xpath(self.login_username_field_xpath)
                 password_field = self.driver.find_element_by_xpath(self.login_password_field_xpath)
                 username_field.send_keys(username)
@@ -133,41 +135,49 @@ class ACCOUNT:
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_submit_button_xpath)))
 
             except TimeoutException:
-                print('Login Error: Unable To Locate Clickable Submit Button')
+                # close login form
+                print('Account API Error: Unable To Locate Clickable Submit Button On Login Form')
                 self.close_login_form()
 
                 return False
 
             try:
-                # create login submit button
-                # click login submit button
+                # create submit button
+                # click submit button
+                # wait for invalid credentials banner or logged in elements to appear
                 login_submit_button = self.driver.find_element_by_xpath(self.login_submit_button_xpath)
                 login_submit_button.click()
                 WebDriverWait(self.driver, self.screen_load_wait).until(
                     lambda driver: driver.find_elements(By.XPATH, self.logged_in_xpath) or driver.find_elements(By.XPATH, self.invalid_credentials_xpath))
 
             except TimeoutException:
-                print('Login Error: Submission Exceeded Time Limit')
+                # close login form
+                print('Account API Error: Login Form Submission Exceeded Time Limit')
                 self.close_login_form()
 
                 return False
 
-            # check if invalid credentials xpath exists
+            # check if user successfuly logged in
             if self.driver.find_elements_by_xpath(self.logged_in_xpath):
-                print('Login Successful')
+                print('Account API Success: Logged Into System As {}'.format(username))
 
                 return True
 
+            # check if invalid credentials banner exists
+            # close login form
             elif self.driver.find_elements_by_xpath(self.invalid_credentials_xpath):
-                print('Login Error: Invalid Credentials')
+                print('Account API Error: Invalid Credentials Provided For Username {}'.format(username))
                 self.close_login_form()
 
                 return False
 
+        # check if username or password not provided
         elif not username or not password:
-            print('Login Error: Username And/Or Password Not Provided')
+            print('Account API Error: Username And/Or Password Input Parameters Not Provided')
+
+        # check if user is already logged in
         elif self.check_logged_in():
-            print('Login Error: User Already Logged In')
+            print('Account API Error: User Already Logged In')
 
         return False
 
@@ -175,28 +185,29 @@ class ACCOUNT:
     # log user out of account
     def logout(self):
 
-        # check if user is logged in
+        # check if user is already logged in
         if self.check_logged_in():
 
             try:
-                # wait for account menu button to be cliackable
+                # wait for account menu button to be clickable
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.account_menu_xpath)))
 
             except TimeoutException:
-                print('Login Error: Unable To Locate Clickable Account Menu')
+                print('Account API Error: Unable To Locate Clickable Account Menu')
 
                 return False
 
             try:
                 # create account menu object
-                # click account menu
-                # wait for account menu items to become available
+                # open account menu
+                # wait for account menu items to become clickable
                 account_menu = self.driver.find_element_by_xpath(self.account_menu_xpath)
                 account_menu.click()
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.logout_link_xpath)))
 
             except:
-                print('Logout Error: Unable To Locate Clickable Logout Account Menu Item')
+                # close account menu
+                print('Account API Error: Unable To Locate Clickable Account Menu Logout Item')
                 account_menu.click()
 
                 return False
@@ -204,32 +215,32 @@ class ACCOUNT:
             try:
                 # create logout link object
                 # click logout link
-                # wait for logout confirmation button to become available
+                # wait for logout confirmation button to become clickable
                 logout_link = self.driver.find_element_by_xpath(self.logout_link_xpath)
                 logout_link.click()
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.logout_confirmation_button_xpath)))
 
             except:
-                print('Logout Error: Unable To Locate Clickable Logout Confirmation Button')
+                print('Account API Error: Unable To Locate Clickable Logout Confirmation Button')
 
                 return False
 
             try:
                 # create logout confirmation button object
                 # click logout confirmation button
-                # wait for login button to become available
+                # wait for login button xpath to exist
                 logout_confirmation_button = self.driver.find_element_by_xpath(self.logout_confirmation_button_xpath)
                 logout_confirmation_button.click()
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.presence_of_element_located((By.XPATH, self.login_link_xpath)))
-                print('Logout SuccessFul')
+                print('Account API Success: Logged Out Of System')
 
             except:
-                print('Logout Error: Unable To Locate Clickable Login Link')
+                print('Account API Error: Unable To Locate Clickable Login Link After Logging Out')
 
                 return False
 
         else:
-            print('Logout Error: User Not Logged In')
+            print('Account API Error: Unable To Logout Because User Not Logged In')
 
         return False
 
@@ -237,30 +248,34 @@ class ACCOUNT:
     # get user information
     def get_user_information(self, information_type='available_funds'):
 
-        # check if information_type parameter input exists and if user logged in
-        # get information type xpath
-        # get information type label to remove
+        # check if information_type parameter input is valid
+        # check if user already logged in
+        # get information type xpath based on parameter input
+        # get information type label to remove based on parameter input
         if information_type in self.information_type_xpaths and self.check_logged_in():
             information_type_xpath = self.information_type_xpaths[information_type]['xpath']
             information_type_label_remove = self.information_type_xpaths[information_type]['label_remove']
 
-		    # check if information xpath xpath exists
+		    # check if information xpath exists
             # find information with label
             # remove label from information
             if self.driver.find_elements_by_xpath(information_type_xpath):
                 label_information = self.driver.find_element_by_xpath(information_type_xpath).text
                 information = label_information[len(information_type_label_remove): ]
-                print('{} Information Retrieval Successful'.format(information_type.replace('_', ' ').title()))
+                print('Account API Success: Retrieved {} Information'.format(information_type.replace('_', ' ').title()))
 
                 return information
 
             else:
-                print('User Information Error: Unable To Locate Information')
+                print('Account API Error: Unable To Locate {} Information'.format(information_type.replace('_', ' ').title()))
 
+        # check if invalid parameter input provided
         elif information_type not in self.information_type_xpaths:
-            print('User Information Error: Need To Provide Valid Information Type')
+            print('Account API Error: Unable To Retrieve Information Because Invalid Input For Parameter Provided')
+
+        # check if user logged in
         elif not self.check_logged_in():
-            print('User Information Error: User Not Logged In')
+            print('Account API Error: Unable To Retrieve {} Information Because User Not Logged In'.format(information_type.replace('_', ' ').title()))
 
         return None
 

@@ -1,11 +1,11 @@
 # import packages
-import re
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 
 # import custom packages
+from . import helper
 
 # define static variables
 
@@ -26,9 +26,14 @@ class BET:
         self.place_bet_button_xpath = '//*[@id="SBbetSlip"]/div[7]/div[2]/div[2]/div[2]/div[2]/button'
         self.bet_confirmation_receipt_xpath = '//div[@class="your_receipt_desktop"]'
         self.bet_confirmation_exit_button_xpath = '//div[@class="betPlacement"]/descendant::div[@class="column column-left"]/button[@class="btn secondary"]'
-        self.bet_refernce_id_xpath = '//div[@class="reference"]/span[@class="value"]'
+        self.bet_reference_id_xpath = '//div[@class="reference"]/span[@class="value"]'
         self.odds_changed_banner_xpath = '//div[@class="singles REGULAR"]/descendant::div[@class="header-changed msg info"]'
         self.delete_all_bets_xpath = '//div[@class="betslip_actions"]/descendant::button[@class="delALL btn"]'
+        self.active_bet_reference_ids_xpath = '//div[@class="betrefs"]'
+        self.active_bet_current_moneyline_xpath = '//div[@class="stmnt-bets"]/div[contains(@class, "stmnt-bet")][{}]/descendant::span[@class="leginfo-odds pricetype-CP"]'
+        self.sell_button_xpath = '//div[@class="stmnt-bets"]/descendant::div[@class="block buyback"][{}]/button[@class="stmnt-btn sb-green"]'
+        self.sell_confirmation_button_xpath = '//div[@class="block buyback"]/button[@class="stmnt-btn sb-blue"]'
+        self.sold_confirmation_xpath = '//div[@class="legribbon legribbon-boughtback"]'
         self.types = ['less', 'more', 'equal', 'any']
         self.current_value_xpath = ''
         self.bet_types =    {
@@ -47,66 +52,44 @@ class BET:
                             }
 
 
-	# removes characters not allowed with float type (allows periods and negative characters)
-    def float_regex(self, input):
+    # create selling/betting rules
+    def get_bet_rules(type, compare_value, current_value):
 
-        return re.sub('[^0-9^.^-]','', input)
+        # build ruleset any results if criteria met for each
+        rules = [type == 'less' and compare_value > current_value,
+                    type == 'equal' and compare_value == current_value,
+                    type == 'more' and compare_value < current_value,
+                    type == 'any']
 
-
-	# removes characters not allowed with integer type (allows negative characters)
-    def int_regex(self, input):
-
-        return re.sub('[^0-9^-]','', input)
-
-
-	# check if float type
-    def is_float(self, input):
-
-        try:
-            num = float(input)
-        except:
-            return False
-
-        return True
-
-
-    # check if integer type
-    def is_int(self, input):
-
-        try:
-            num = int(input)
-        except:
-            return False
-
-        return True
+        return rules
 
 
     # delete all bets from betslip
     def delete_bets(self):
 
-        # check if delete bets button xpath exists
-        if self.driver.find_element_by_xpath(self.delete_all_bets_xpath):
+        # check if delete all bets button xpath exists
+        if self.driver.find_elements_by_xpath(self.delete_all_bets_xpath):
 
             try:
-                # wait for delete bets button to be cliackable
+                # wait for delete all bets button to be cliackable
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.delete_all_bets_xpath)))
 
             except TimeoutException:
-                print('Betslip Delete Bets Error: Unable To Locate Clickable Button')
+                print('Bet API Error: Unable To Locate Clickable Delete All Bets Button')
 
                 return
 
             try:
-                # create delete bets button object
-                # click login form exit image
-                # wait for login link to be cliackable
-                delete_bets_button = self.driver.find_element_by_xpath(self.delete_all_bets_xpath)
-                delete_bets_button.click()
+                # create delete all bets button object
+                # click delete all bets button
+                # wait for empty betslip xpath to exist
+                delete_all_bets_button = self.driver.find_element_by_xpath(self.delete_all_bets_xpath)
+                delete_all_bets_button.click()
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.presence_of_element_located((By.XPATH, self.betslip_empty_xpath)))
-                print('Betslip Delete Bets Successful')
+                print('Bet API Success: Deleted All Bets')
 
             except TimeoutException:
-                print('Betslip Delete Bets Error: Submission Exceeded Time Limit')
+                print('Bet API Error: Delete All Bets Submission Exceeded Time Limit')
 
                 return
 
@@ -118,86 +101,85 @@ class BET:
         event_category_id = None
         event_team_builder_id = None
 
-        # check if bet_type and type parameter inputs exist
+        # check if bet_type and type parameter inputs are valid
         if bet_type in self.bet_types and type in self.types:
 
-            # find live event categories
+            # get live event categories
             event_categories = self.driver.find_elements_by_xpath(self.event_categories_xpath)
 
             # loop through event categories
-            for i in range(0, len(event_categories)):
+            for i, item in enumerate(event_categories):
 
                 # check if league event category exists
-                # update event_category_id with additional increment since selenium starts with index 1
+                # update event_category_id variable (increment by 1 since selenium starts with index 1)
                 if event_categories[i].text == league:
                     event_category_id = i + 1
                     break
 
-            # check if event category id found
+            # check if event_category_id updated
             if event_category_id:
 
-                # dynamically build teams_xpath
-                # find all teams currently playing in event category
+                # create teams_xpath
+                # find all teams currently playing within event category
                 teams_xpath = self.teams_xpath_placeholder.format(event_category_id)
                 team_names = self.driver.find_elements_by_xpath(teams_xpath)
 
-                # cloop through teams starting from 1 since selenium starts with index 1
-                for i in range(1, len(team_names) + 1):
+                # loop through teams
+                for i, item in enumerate(team_names):
 
                     # check if team exists
-                    # update event_team_builder
-                    if team_names[i-1].text == team_name:
-                        event_team_builder_id = i
+                    # update event_team_builder variable (increment by 1 since selenium starts with index 1)
+                    if team_names[i].text == team_name:
+                        event_team_builder_id = i + 1
                         break
 
                 # check if event/team div builder id exists
-                # dynamically assign event and team div ids
-                # dynamically build moneyline xpath
+                # assign event and team div ids
+                # create moneyline xpath
                 if event_team_builder_id:
                     event_div_id = round((i / 2) + .01)
                     team_div_id = 2 if i % 2 == 0 else 1
                     bet_type_button_xpath = self.bet_type_button_xpath_placeholder.format(event_category_id, event_div_id, self.bet_types[bet_type]['xpath_class'], team_div_id)
 
                     try:
-                        # check if bet type button exists
+                        # check if bet type button is clickable
                         WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, bet_type_button_xpath)))
 
                     except TimeoutException:
-                        print('Bet Type Button Error: Unable To Locate Clickable {} Button'.format(bet_type.title()))
+                        print('Bet API Error: Unable To Locate Clickable {} Button'.format(bet_type.title()))
 
                         return False
 
                     try:
-                        # dynamically assign bet type button value
+                        # get bet type button value
                         bet_type_value = self.driver.find_element_by_xpath(bet_type_button_xpath).text
 
                         # check if bet type should be a float value
                         # convert bet type value to float
                         if self.bet_types[bet_type]['type'] == 'float':
-                            bet_type_value = self.float_regex(input=bet_type_value)
-                            bet_type_value  = float(bet_type_value) if self.is_float(input=bet_type_value) else bet_type_value
+                            bet_type_value = helper.float_regex(input=bet_type_value)
+                            bet_type_value  = float(bet_type_value) if helper.is_float(input=bet_type_value) else bet_type_value
 
                         # check if bet_type should be an int value
                         # convert bet type value to int
                         elif self.bet_types[bet_type]['type'] == 'int':
-                            bet_type_value = self.int_regex(input=bet_type_value)
-                            bet_type_value = int(bet_type_value) if self.is_int(input=bet_type_value) else bet_type_value
+                            bet_type_value = helper.int_regex(input=bet_type_value)
+                            bet_type_value = int(bet_type_value) if helper.is_int(input=bet_type_value) else bet_type_value
 
-                        if not self.is_int(input=bet_type_value) and not self.is_float(input=bet_type_value):
-                            print('Bet Type Value Error: Value Is Not Int Or Float')
+                        if not helper.is_int(input=bet_type_value) and not helper.is_float(input=bet_type_value):
+                            print('Bet API Error: Unable To Convert {} Button Value To Int/Float'.format(bet_type.title()))
 
                             return False
 
                     except:
-                        print('Bet Type Value Error: Unable To Prepare Bet Value')
+                        print('Bet API Error: Unable To Extract {} Button Value'.format(bet_type.title()))
 
                         return False
 
-                    # create object to store bet rules
-                    bet_rules = [type == 'less' and compare_bet_type_value > bet_type_value, type == 'equal' and compare_bet_type_value == bet_type_value,
-                    		         type == 'more' and compare_bet_type_value < bet_type_value, type == 'any']
+                    # create object of rules on triggering a bet based on parameter inputs
+                    bet_rules = self.get_bet_rules(type=type, compare_value=compare_bet_type_value, current_value=bet_type_value)
 
-                    # check if any rules met to try to trigger bet
+                    # check if any trigger rules met
                     if any(bet_rules):
 
                         try:
@@ -207,34 +189,34 @@ class BET:
                             bet_type_button = self.driver.find_element_by_xpath(bet_type_button_xpath)
                             bet_type_button.click()
                             WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.bet_amount_field_xpath)))
-                            print('BetSlip Load Successful')
+                            print('Bet API Success: Loaded Betslip Form To Initiate Bet')
 
                         except TimeoutException:
-                            print('Betslip Load Error: Form Load Exceeded Time Limit')
+                            print('Bet API Error: Betslip Form Load To Initiate Bet Exceeded Time Limit')
 
                             return False
 
                         try:
                             # create bet amount field object
                             # populate bet amount field
-                            # wait for odds changed banner to appear or place bet button to become clickable
+                            # wait for odds changed banner or place bet button to exist
                             bet_amount_field = self.driver.find_element_by_xpath(self.bet_amount_field_xpath)
                             bet_amount_field.send_keys(bet_amount)
-                            print('Betslip Population Successful')
+                            print('Bet API Success: Populated Bet Amount Field')
                             WebDriverWait(self.driver, self.screen_load_wait).until(
                                 lambda driver: driver.find_elements(By.XPATH, self.odds_changed_banner_xpath) or driver.find_elements(By.XPATH, self.place_bet_button_xpath))
 
                             # check if odds changed banner appeared
                             # delete all bets
                             if self.driver.find_elements_by_xpath(self.odds_changed_banner_xpath):
-                                print("Betslip Error: Odds Changed")
+                                print("Bet API Error: Unable To Process Bet Because The Odds Changed")
                                 self.delete_bets()
 
                                 return False
 
                         except TimeoutException:
                             # delete all bets
-                            print('Betslip Population Error: Field Population Exceeded Time Limit')
+                            print('Bet API Error: Bet Amount Field Population Exceeded Time Limit')
                             self.delete_bets()
 
                             return False
@@ -242,7 +224,7 @@ class BET:
                         try:
                             # create bet button object
                             # click bet button button
-                            # wait for odds changex to appear or bet confirmation button to become clickable
+                            # wait for odds changed banner or place bet button to exist
                             bet_button = self.driver.find_element_by_xpath(self.place_bet_button_xpath)
                             bet_button.click()
                             WebDriverWait(self.driver, self.screen_load_wait).until(
@@ -251,56 +233,165 @@ class BET:
                             # check if odds changed banner appeared
                             # delete all bets
                             if self.driver.find_elements_by_xpath(self.odds_changed_banner_xpath):
-                                print("Betslip Error: Odds Changed")
+                                print("Bet API Error: Unable To Process Bet Because The Odds Changed")
                                 self.delete_bets()
 
                                 return False
 
                             else:
-                                print('Betslip Submission Successful')
+                                print('Bet API Success: Bet Submission Processed')
 
                         except TimeoutException:
-                            print('Betslip Submission Error: Submission Exceeded Time Limit')
+                            print('Bet API Error: Bet Submission Exceeded Time Limit')
                             self.delete_bets()
 
                             return False
 
                         try:
-                            # get bet refernce id
+                            # create default variable
+                            # wait for bet reference to be available
+                            # update variable
+                            bet_reference_id = None
+                            WebDriverWait(self.driver, self.screen_load_wait).until(EC.presence_of_element_located((By.XPATH, self.bet_reference_id_xpath)))
+                            bet_reference_id = self.driver.find_element_by_xpath(self.bet_reference_id_xpath).text
+                            print('Bet API Success: Extracted Bet Reference ID ({})'.format(bet_reference_id))
+
+                        except TimeoutException:
+                            print('Bet API Error: Unable To Extract Bet Reference ID')
+
+                        try:
                             # create bet confirmation button object
-                            # click bet confirmation button button
+                            # click bet confirmation button
                             # wait for betslip to be empty
-                            bet_refernce_id = self.driver.find_element_by_xpath(self.bet_refernce_id_xpath).text
                             bet_confirmation_button = self.driver.find_element_by_xpath(self.bet_confirmation_exit_button_xpath)
                             bet_confirmation_button.click()
                             WebDriverWait(self.driver, self.screen_load_wait).until(EC.presence_of_element_located((By.XPATH, self.betslip_empty_xpath)))
-                            print('Betslip Reference #: {}'.format(bet_refernce_id))
-                            print('Betslip Emptied Successful')
-
-                            return bet_refernce_id
+                            print('Bet API Success: Betslip Emptied After Purchase')
 
                         except TimeoutException:
-                            print('Betslip Empty Error: Submission Exceeded Time Limit')
+                            print('Bet API Error: Emptying Betslip After Purchase Exceeded Time Limit')
 
-                            return False
+                        return bet_reference_id
 
                     else:
-                        print('Betslip Load Error: Desired Bet Not Available')
+                        print('Bet API Error: Desired Bet Based On Parameters Is Not Available')
                 else:
-                    print('Betslip Load Error: Unable To Locate Event ID')
+                    print('Bet API Error: Unable To Locate Event ID')
             else:
-                print('Betslip Load Error: Unable To Locate Event Category ID')
+                print('Bet API Error: Unable To Locate Event Category ID')
         elif bet_type not in self.bet_types:
-            print('Bet Error: Parameter Input {} Not Valid'.format(bet_type))
+            print('Bet API Error: Parameter Input {} For "bet_type" Not Valid'.format(bet_type))
         elif type not in self.types:
-            print('Bet Error: Parameter Input {} Not Valid'.format(type))
+            print('Bet API Error: Parameter Input {} For "type" Not Valid'.format(type))
 
         return False
 
 
     # sell bet
-    def sell(self, reference_id, bet_comparision_value, type='equal'):
-        print("TEST")
+    def sell(self, reference_id, compare_moneyline_value, type='equal'):
+
+        # create default variable
+        active_bet_order = None
+
+        # check if type parameter input is valid
+        if type in self.types:
+
+            try:
+                # wait for active bets to exist
+                WebDriverWait(self.driver, self.screen_load_wait).until(EC.presence_of_element_located((By.XPATH, self.active_bet_reference_ids_xpath)))
+
+            except TimeoutException:
+                print('Bet API Error: Unable To Locate Any Active Bets')
+
+                return False
+
+            active_bet_ids = self.driver.find_elements_by_xpath(self.active_bet_reference_ids_xpath)
+
+            # loop through active bets
+            for i, item in enumerate(active_bet_ids):
+
+                # check if active bet has reference id
+                # update active_bet_order variable (increment by 1 since selenium starts with index 1)
+                if str(reference_id) in item.text:
+                    active_bet_order = i + 1
+                    print('Bet API Success: Located Bet #{} Requested To Sell'.format(reference_id))
+
+            # check if reference # found
+            # build current moneyline xpath
+            # build sell button xpath
+            if active_bet_order:
+                self.active_bet_current_moneyline_xpath = self.active_bet_current_moneyline_xpath.format(active_bet_order)
+                self.sell_button_xpath = self.sell_button_xpath.format(active_bet_order)
+
+                try:
+                    # wait for active bet current moneyline to exist
+                    # get active bet current moneyline
+                    WebDriverWait(self.driver, self.screen_load_wait).until(EC.presence_of_element_located((By.XPATH, self.active_bet_current_moneyline_xpath)))
+                    current_moneyline = self.driver.find_element_by_xpath(self.active_bet_current_moneyline_xpath).text
+                    print('Bet API Success: Located Current Moneyline Value Required To Sell')
+
+                    # convert to int type if possible
+                    current_moneyline = helper.int_regex(input=current_moneyline)
+                    current_moneyline = int(current_moneyline) if helper.is_int(input=current_moneyline) else current_moneyline
+
+                except TimeoutException:
+                    print('Bet API Error: Unable To Locate Current Moneyline Value Required To Sell')
+
+                    return False
+
+                # check if current moneyline was converted to an int
+                if helper.is_int(input=current_moneyline):
+
+                    try:
+                        # wait for sell button to become clickable
+                        # create sell button object
+                        WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.sell_button_xpath)))
+                        sell_button = self.driver.find_element_by_xpath(self.sell_button_xpath)
+
+                    except TimeoutException:
+                        print('Bet API Error: Unable To Locate Clickable Sell Button')
+
+                        return False
+
+                    # create object of rules on selling a bet based on parameter inputs
+                    bet_rules = self.get_bet_rules(type=type, compare_value=compare_moneyline_value, current_value=current_moneyline)
+
+                    # check if any trigger rules met
+                    if any(bet_rules):
+
+                        try:
+                            # click sell button
+                            # wait for sell confirmation button to appear
+                            sell_button.click()
+                            WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.sell_confirmation_button_xpath)))
+                            print('Bet API Success: Clicked Sell Button')
+
+                        except TimeoutException:
+                            print('Bet API Error: Unable To Complete Process After Clicking Sell Button')
+
+                            return False
+
+                        try:
+                            # create sell confirmation button object
+                            # click sell confirmation button
+                            sell_confirmation_button = self.driver.find_element_by_xpath(self.sell_confirmation_button_xpath)
+                            sell_confirmation_button.click()
+                            WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.sold_confirmation_xpath)))
+                            print('Bet API Success: Sold Bet #{}'.format(reference_id))
+
+                        except TimeoutException:
+                            print('Bet API Error: Unable To Complete Process After Clicking Sell Confirmation Button')
+
+                            return False
+
+                    else:
+                        print('Bet API Error: Desired Bet Based On Parameters Is Not Available')
+                else:
+                    print('Bet API Error: Current Moneyline Value Required To Sell Not A Number')
+            else:
+                print('Bet API Error: Unable To Locate Bet #'.format(reference_id))
+        elif type not in self.types:
+            print('Bet API Error: Parameter Input {} For "type" Not Valid'.format(type))
 
 
     def __repr__(self):

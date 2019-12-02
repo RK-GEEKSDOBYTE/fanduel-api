@@ -70,7 +70,7 @@ def main():
 				time.sleep(dci - cycle_duration)
 
         # close current driver instance windows
-        driver.driver.quit()
+		driver.driver.quit()
 
 	except Exception as e:
 		print(str(e))

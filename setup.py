@@ -7,14 +7,14 @@ from setuptools import find_packages, setup, Command
 # import custom packages
 
 # define static variables
-name = 'fanduel-automated-betting'
+name = 'fanduel-api'
 description = 'Package for scraping and executing real-time trading'
-url = 'https://github.com/ribeiro11075/fanduel-automated-betting'
+url = 'https://github.com/ribeiro11075/fanduel-api'
 author_email = 'ribeiro11075@gmail.com'
 author = 'David Ribeiro'
 requires_python = '>=3.6.0'
 version = '0.0.0'
-install_requires = ['bs4', 'selenium', 'requests', 'selenium', 'time', 'datetime', 're']
+install_requires = ['bs4', 'selenium', 'requests', 'time', 'datetime', 're', 'sys']
 extras_require = {}
 include_package_data = True
 exclude = ['config']
