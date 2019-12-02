@@ -54,7 +54,7 @@ def main():
         # attempt to submit bet
         if account.check_logged_in():
             navigate.click_tab(tab_type='bet_status', tab_name='Active')
-            bet.sell(reference_id=32920856, bet_comparision_moneyline=200, type='less')
+            bet.sell(reference_id=32920856, compare_moneyline_value=200, type='less')
             account.logout()
 
         # close current driver instance windows

@@ -53,7 +53,7 @@ class BET:
 
 
     # create selling/betting rules
-    def get_bet_rules(type, compare_value, current_value):
+    def get_bet_rules(self, type, compare_value, current_value):
 
         # build ruleset any results if criteria met for each
         rules = [type == 'less' and compare_value > current_value,

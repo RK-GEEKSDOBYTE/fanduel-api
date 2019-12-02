@@ -48,12 +48,12 @@ def main():
         account.login(username=username, password=password)
         navigate.close_modal_window()
         navigate.close_plugin()
-        navigate.click_tab(tab_type='event_group', tab_name='Live')
 
         # check if logged in
         # attempt to submit bet
         # attempt to submit bet
         if account.check_logged_in():
+            navigate.click_tab(tab_type='bet_status', tab_name='Betslip')
             bet.submit(bet_amount=1, league='NHL', team_name='Edmonton Oilers', compare_bet_type_value=600, bet_type='moneyline', type='less')
             account.logout()
 

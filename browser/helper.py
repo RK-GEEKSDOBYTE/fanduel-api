@@ -9,19 +9,19 @@ import re
 
 
 # removes characters not allowed with float type (allows periods and negative characters)
-def float_regex(self, input):
+def float_regex(input):
 
     return re.sub('[^0-9^.^-]','', input)
 
 
 # removes characters not allowed with integer type (allows negative characters)
-def int_regex(self, input):
+def int_regex(input):
 
     return re.sub('[^0-9^-]','', input)
 
 
 # check if float type
-def is_float(self, input):
+def is_float(input):
 
     try:
         num = float(input)
@@ -32,7 +32,7 @@ def is_float(self, input):
 
 
 # check if integer type
-def is_int(self, input):
+def is_int(input):
 
     try:
         num = int(input)
