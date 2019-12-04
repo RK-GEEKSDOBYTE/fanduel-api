@@ -1,6 +1,5 @@
 # import packages
 import sys
-from datetime import datetime
 import time
 
 # import custom packages
@@ -41,15 +40,17 @@ def main():
 
 		while True:
 
-			# check if internet connection exists
-			if not driver.check_internet_connection():
-				raise Exception('No Internet Connection')
-
 			# check if browser needs to be refreshed (ensures client-side continues updating webpage through API calls)
 			if driver.check_browser_refresh_required():
 
+				# check if internet connection exists
+				if not driver.check_internet_connection():
+					raise Exception('No Internet Connection')
+
+				# refresh browser
 				# close modal window
 				# click Live group event tab
+				driver.browser_refresh()
 				navigate.close_modal_window()
 				navigate.click_tab(tab_type='event_group', tab_name='Live')
 
@@ -57,7 +58,6 @@ def main():
 			# scrape webpage for active events
 			data_collection_start_time = time.time()
 			data = scrape.get_all_events_info(sports_active=sa, sports_html_classes=shc, sports_minute_logged=sml)
-			print('{} --- Found {} record(s)'.format(datetime.now().time(), len(data)))
 
 			# log time to finish data collection
 			# calculate data collection interval

@@ -256,6 +256,8 @@ class SCRAPE():
 										event_info.home_team_spread_odds, event_info.away_team_moneyline, event_info.home_team_moneyline,
 										event_info.over, event_info.over_odds, event_info.under, event_info.under_odds, event_info.tie_moneyline])
 
+		print('Scrape API Success: Found {} record(s) at {}'.format(len(data), datetime.now().time()))
+
 		return data
 
 

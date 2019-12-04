@@ -13,7 +13,7 @@ class NAVIGATE:
         self.driver = driver
         self.modal_initial_close_xpath = '//div[@class="q-close-template-overlay"]'
         self.modal_signin_close_xpath = '//button[@class="close"]'
-        self.plug_required_close_xpath = '//div[@class="close"]/descendant::i'
+        self.plugin_required_close_xpath = '//div[@class="close"]/descendant::i'
         self.cashout_toggle_xpath = '//button[contains(@class, "stmnt-tgl filterbbtgl")]'
         self.cashout_toggle_on_xpath = '//button[contains(@class, "stmnt-tgl filterbbtgl on")]'
         self.tab_type_xpaths =  {
@@ -28,8 +28,8 @@ class NAVIGATE:
 
         # check if plugin xpath exists
         # create plugin object
-        if self.driver.find_elements_by_xpath(self.plug_required_close_xpath):
-            plugin = self.driver.find_element_by_xpath(self.plug_required_close_xpath)
+        if self.driver.find_elements_by_xpath(self.plugin_required_close_xpath):
+            plugin = self.driver.find_element_by_xpath(self.plugin_required_close_xpath)
 
 			# check if plugin can be closed (clicked)
             # close plugin
@@ -42,7 +42,9 @@ class NAVIGATE:
             else:
                 print('Navigate API Error: Unable To Close Active Geo-Location Plugin Notification')
 
-        return False
+                return False
+
+        return True
 
 
 	# close modal window that appears when first visiting webpage, refreshing webpage, or logging in
@@ -65,7 +67,9 @@ class NAVIGATE:
             else:
                 print('Navigate API Error: Unable To Close Active Modal Window')
 
-        return False
+                return False
+
+        return True
 
 
 	# activate tab

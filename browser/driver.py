@@ -38,6 +38,7 @@ class DRIVER:
 		# navigate to webpage
 		self.driver = webdriver.Chrome(self.driver_location, chrome_options=options)
 		self.driver.get(self.url)
+		print('Driver API Success: Created Web Driver')
 
 
 	# check internet connection
@@ -45,22 +46,33 @@ class DRIVER:
 
 		try:
 			# attempt to access website
-			requests.get(self.url, timeout=10)
+			requests.get('https://www.google.com', timeout=10)
+			print('Driver API Success: Internet Connection Exists')
+
+			return True
 
 		except:
-			return False
+			print('Driver API Error: No Internet Connection')
 
-		return True
+		return False
 
 
 	# refresh browser to ensure client-side continues updating webpage through API calls
 	def browser_refresh(self):
 
-		# refresh browser
-		# log browser refresh completed time
-		self.driver.refresh()
-		print('Driver API Success: Refreshed Web Driver')
-		self.browser_refresh_complete_time = time.time()
+		try:
+			# refresh browser
+			# log browser refresh completed time
+			self.driver.refresh()
+			self.browser_refresh_complete_time = time.time()
+			print('Driver API Success: Refreshed Browser')
+
+			return True
+
+		except:
+			print('Drive API Error: Unable To Refresh Browser')
+
+		return False
 
 
 	# check if browser refresh is required
@@ -72,8 +84,6 @@ class DRIVER:
 		# check if time elapsed is greater than browser refresh interval
 		# refresh webpage
 		if time_elapsed > self.browser_refresh_int:
-			self.browser_refresh()
-
 			return True
 
 		return False

@@ -77,7 +77,7 @@ class BET:
             except TimeoutException:
                 print('Bet API Error: Unable To Locate Clickable Delete All Bets Button')
 
-                return
+                return False
 
             try:
                 # create delete all bets button object
@@ -88,10 +88,17 @@ class BET:
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.presence_of_element_located((By.XPATH, self.betslip_empty_xpath)))
                 print('Bet API Success: Deleted All Bets')
 
+                return True
+
             except TimeoutException:
                 print('Bet API Error: Delete All Bets Submission Exceeded Time Limit')
 
-                return
+                return True
+
+        else:
+            print('Bet API Error: Unable To Locate Delete All Bets Button')
+
+        return False
 
 
     # submit bet
@@ -315,6 +322,7 @@ class BET:
                 if str(reference_id) in item.text:
                     active_bet_order = i + 1
                     print('Bet API Success: Located Bet #{} Requested To Sell'.format(reference_id))
+                    break
 
             # check if reference # found
             # build current moneyline xpath
@@ -379,6 +387,8 @@ class BET:
                             WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.sold_confirmation_xpath)))
                             print('Bet API Success: Sold Bet #{}'.format(reference_id))
 
+                            return True
+
                         except TimeoutException:
                             print('Bet API Error: Unable To Complete Process After Clicking Sell Confirmation Button')
 
@@ -392,6 +402,8 @@ class BET:
                 print('Bet API Error: Unable To Locate Bet #'.format(reference_id))
         elif type not in self.types:
             print('Bet API Error: Parameter Input {} For "type" Not Valid'.format(type))
+
+        return False
 
 
     def __repr__(self):

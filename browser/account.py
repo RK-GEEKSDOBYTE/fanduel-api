@@ -67,7 +67,7 @@ class ACCOUNT:
             except TimeoutException:
                 print('Account API Error: Unable To Locate Clickable Exit Button On Login Form')
 
-                return
+                return False
 
             try:
                 # create login form exit object
@@ -77,10 +77,17 @@ class ACCOUNT:
                 login_form_exit_image.click()
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_link_xpath)))
 
+                return True
+
             except TimeoutException:
                 print('Account API Error: Unable To Locate Clickable Login Link After Closing Login Form')
 
-                return
+                return False
+
+        else:
+            print('Account API Error: Unable To Locate Exit Button On Login Form')
+
+        return False
 
 
     # log user into account
@@ -234,6 +241,8 @@ class ACCOUNT:
                 WebDriverWait(self.driver, self.screen_load_wait).until(EC.presence_of_element_located((By.XPATH, self.login_link_xpath)))
                 print('Account API Success: Logged Out Of System')
 
+                return True
+
             except:
                 print('Account API Error: Unable To Locate Clickable Login Link After Logging Out')
 
@@ -277,7 +286,7 @@ class ACCOUNT:
         elif not self.check_logged_in():
             print('Account API Error: Unable To Retrieve {} Information Because User Not Logged In'.format(information_type.replace('_', ' ').title()))
 
-        return None
+        return False
 
 
     def __repr__(self):
