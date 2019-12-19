@@ -202,7 +202,7 @@ class SCRAPE():
 		# find live event categories
 		# get scrape time
 		# create empty list to store data
-		html = BeautifulSoup(self.driver.page_source, 'html.parser')
+		html = BeautifulSoup(self.driver.driver.page_source, 'html.parser')
 		live_event_categories_html = html.find_all('div', {'class': 'live-event-container'})
 		scrape_time = datetime.now()
 		data = []
@@ -256,7 +256,7 @@ class SCRAPE():
 										event_info.home_team_spread_odds, event_info.away_team_moneyline, event_info.home_team_moneyline,
 										event_info.over, event_info.over_odds, event_info.under, event_info.under_odds, event_info.tie_moneyline])
 
-		print('Scrape API Success: Found {} record(s) at {}'.format(len(data), datetime.now().time()))
+		self.driver.logging.info('Scraped {} Records'.format(len(data)))
 
 		return data
 

@@ -18,6 +18,8 @@ bri = config.browser_refresh_int
 dci = config.data_collection_int
 dh = config.driver_headless
 dl = config.driver_location
+lfd = config.log_file_directory
+dbg = config.debug
 url = config.url
 sa = {k: v['active'] for k, v in config.sports.items() if v['active'] == True}
 shc = {k: v['html_class'] for k, v in  config.sports.items() if k in sa}
@@ -28,11 +30,14 @@ sa = {k: v for k, v in sa.items() if k in shc and k in sml}
 def main():
 
 	# create driver object
-	driver = dri.DRIVER(browser_refresh_int=bri, driver_headless=dh, driver_location=dl, url=url)
-	navigate = nav.NAVIGATE(driver=driver.driver)
-	scrape = scp.SCRAPE(driver=driver.driver)
+	# create navigate object
+	# create scrape object
+	driver = dri.DRIVER(browser_refresh_int=bri, driver_headless=dh, driver_location=dl, log_file_directory=lfd, debug=dbg, url=url)
+	navigate = nav.NAVIGATE(driver=driver)
+	scrape = scp.SCRAPE(driver=driver)
 
 	try:
+
 		# close modal window
 		# click Live group event tab
 		navigate.close_modal_window()
@@ -69,16 +74,13 @@ def main():
 			if cycle_duration < dci:
 				time.sleep(dci - cycle_duration)
 
-        # close current driver instance windows
-		driver.driver.quit()
-
 	except Exception as e:
 		print(str(e))
 
-		# check if driver instance exists
-		# close current driver instance windows
-		if driver.driver:
-			driver.driver.quit()
+	# check if driver instance exists
+	# close current driver instance windows
+	if driver.driver:
+		driver.driver.quit()
 
 
 if __name__ == '__main__':

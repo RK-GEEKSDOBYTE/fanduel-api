@@ -48,7 +48,7 @@ class ACCOUNT:
     def check_logged_in(self):
 
         # check if user logged in xpath exists
-        if self.driver.find_elements_by_xpath(self.logged_in_xpath):
+        if self.driver.driver.find_elements_by_xpath(self.logged_in_xpath):
             return True
 
         return False
@@ -58,11 +58,11 @@ class ACCOUNT:
     def close_login_form(self):
 
         # check if login form exit xpath exists
-        if self.driver.find_elements_by_xpath(self.login_form_exit_xpath):
+        if self.driver.driver.find_elements_by_xpath(self.login_form_exit_xpath):
 
             try:
                 # wait for login form exit to be cliackable
-                WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_form_exit_xpath)))
+                WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_form_exit_xpath)))
 
             except TimeoutException:
                 print('Account API Error: Unable To Locate Clickable Exit Button On Login Form')
@@ -73,9 +73,9 @@ class ACCOUNT:
                 # create login form exit object
                 # click login form exit
                 # wait for login link to be cliackable
-                login_form_exit_image = self.driver.find_element_by_xpath(self.login_form_exit_xpath)
+                login_form_exit_image = self.driver.driver.find_element_by_xpath(self.login_form_exit_xpath)
                 login_form_exit_image.click()
-                WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_link_xpath)))
+                WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_link_xpath)))
 
                 return True
 
@@ -99,7 +99,7 @@ class ACCOUNT:
 
             try:
                 # wait for login link to be clickable
-                WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_link_xpath)))
+                WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_link_xpath)))
 
             except TimeoutException:
                 print('Account API Error: Unable To Locate Clickable Login Link')
@@ -110,9 +110,9 @@ class ACCOUNT:
                 # create login link object
                 # click login link
                 # wait for login form xpath to exist
-                login_link = self.driver.find_element_by_xpath(self.login_link_xpath)
+                login_link = self.driver.driver.find_element_by_xpath(self.login_link_xpath)
                 login_link.click()
-                WebDriverWait(self.driver, self.screen_load_wait).until(EC.presence_of_element_located((By.XPATH, self.login_form_xpath)))
+                WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.presence_of_element_located((By.XPATH, self.login_form_xpath)))
 
             except TimeoutException:
                 print('Account API Error: Login Form Render Exceeded Time Limit')
@@ -121,8 +121,8 @@ class ACCOUNT:
 
             try:
                 # wait for username/password fields to be cliackable
-                WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_username_field_xpath)))
-                WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_password_field_xpath)))
+                WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_username_field_xpath)))
+                WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_password_field_xpath)))
 
             except TimeoutException:
                 # close login form
@@ -135,11 +135,11 @@ class ACCOUNT:
                 # create username/password field objects
                 # populate username/password fields
                 # wait for submit button to be clickable
-                username_field = self.driver.find_element_by_xpath(self.login_username_field_xpath)
-                password_field = self.driver.find_element_by_xpath(self.login_password_field_xpath)
+                username_field = self.driver.driver.find_element_by_xpath(self.login_username_field_xpath)
+                password_field = self.driver.driver.find_element_by_xpath(self.login_password_field_xpath)
                 username_field.send_keys(username)
                 password_field.send_keys(password)
-                WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_submit_button_xpath)))
+                WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_submit_button_xpath)))
 
             except TimeoutException:
                 # close login form
@@ -152,9 +152,9 @@ class ACCOUNT:
                 # create submit button
                 # click submit button
                 # wait for invalid credentials banner or logged in elements to appear
-                login_submit_button = self.driver.find_element_by_xpath(self.login_submit_button_xpath)
+                login_submit_button = self.driver.driver.find_element_by_xpath(self.login_submit_button_xpath)
                 login_submit_button.click()
-                WebDriverWait(self.driver, self.screen_load_wait).until(
+                WebDriverWait(self.driver.driver, self.screen_load_wait).until(
                     lambda driver: driver.find_elements(By.XPATH, self.logged_in_xpath) or driver.find_elements(By.XPATH, self.invalid_credentials_xpath))
 
             except TimeoutException:
@@ -165,14 +165,14 @@ class ACCOUNT:
                 return False
 
             # check if user successfuly logged in
-            if self.driver.find_elements_by_xpath(self.logged_in_xpath):
+            if self.driver.driver.find_elements_by_xpath(self.logged_in_xpath):
                 print('Account API Success: Logged Into System As {}'.format(username))
 
                 return True
 
             # check if invalid credentials banner exists
             # close login form
-            elif self.driver.find_elements_by_xpath(self.invalid_credentials_xpath):
+            elif self.driver.driver.find_elements_by_xpath(self.invalid_credentials_xpath):
                 print('Account API Error: Invalid Credentials Provided For Username {}'.format(username))
                 self.close_login_form()
 
@@ -197,7 +197,7 @@ class ACCOUNT:
 
             try:
                 # wait for account menu button to be clickable
-                WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.account_menu_xpath)))
+                WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.account_menu_xpath)))
 
             except TimeoutException:
                 print('Account API Error: Unable To Locate Clickable Account Menu')
@@ -208,9 +208,9 @@ class ACCOUNT:
                 # create account menu object
                 # open account menu
                 # wait for account menu items to become clickable
-                account_menu = self.driver.find_element_by_xpath(self.account_menu_xpath)
+                account_menu = self.driver.driver.find_element_by_xpath(self.account_menu_xpath)
                 account_menu.click()
-                WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.logout_link_xpath)))
+                WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.logout_link_xpath)))
 
             except:
                 # close account menu
@@ -223,9 +223,9 @@ class ACCOUNT:
                 # create logout link object
                 # click logout link
                 # wait for logout confirmation button to become clickable
-                logout_link = self.driver.find_element_by_xpath(self.logout_link_xpath)
+                logout_link = self.driver.driver.find_element_by_xpath(self.logout_link_xpath)
                 logout_link.click()
-                WebDriverWait(self.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.logout_confirmation_button_xpath)))
+                WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.logout_confirmation_button_xpath)))
 
             except:
                 print('Account API Error: Unable To Locate Clickable Logout Confirmation Button')
@@ -236,9 +236,9 @@ class ACCOUNT:
                 # create logout confirmation button object
                 # click logout confirmation button
                 # wait for login button xpath to exist
-                logout_confirmation_button = self.driver.find_element_by_xpath(self.logout_confirmation_button_xpath)
+                logout_confirmation_button = self.driver.driver.find_element_by_xpath(self.logout_confirmation_button_xpath)
                 logout_confirmation_button.click()
-                WebDriverWait(self.driver, self.screen_load_wait).until(EC.presence_of_element_located((By.XPATH, self.login_link_xpath)))
+                WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.presence_of_element_located((By.XPATH, self.login_link_xpath)))
                 print('Account API Success: Logged Out Of System')
 
                 return True
@@ -268,8 +268,8 @@ class ACCOUNT:
 		    # check if information xpath exists
             # find information with label
             # remove label from information
-            if self.driver.find_elements_by_xpath(information_type_xpath):
-                label_information = self.driver.find_element_by_xpath(information_type_xpath).text
+            if self.driver.driver.find_elements_by_xpath(information_type_xpath):
+                label_information = self.driver.driver.find_element_by_xpath(information_type_xpath).text
                 information = label_information[len(information_type_label_remove): ]
                 print('Account API Success: Retrieved {} Information'.format(information_type.replace('_', ' ').title()))
 

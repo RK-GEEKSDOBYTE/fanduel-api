@@ -28,19 +28,19 @@ class NAVIGATE:
 
         # check if plugin xpath exists
         # create plugin object
-        if self.driver.find_elements_by_xpath(self.plugin_required_close_xpath):
-            plugin = self.driver.find_element_by_xpath(self.plugin_required_close_xpath)
+        if self.driver.driver.find_elements_by_xpath(self.plugin_required_close_xpath):
+            plugin = self.driver.driver.find_element_by_xpath(self.plugin_required_close_xpath)
 
 			# check if plugin can be closed (clicked)
             # close plugin
             if plugin.is_enabled() and plugin.is_displayed():
                 plugin.click()
-                print('Navigate API Success: Closed Geo-Location Plugin Notification')
+                self.driver.logging.info('Closed Geo-Location Plugin Notification')
 
                 return True
 
             else:
-                print('Navigate API Error: Unable To Close Active Geo-Location Plugin Notification')
+                self.driver.logging.error('Unable To Close Active Geo-Location Plugin Notification')
 
                 return False
 
@@ -51,7 +51,7 @@ class NAVIGATE:
     def close_modal_window(self):
 
         # create list of modal window objects
-        modal_window_objects = self.driver.find_elements_by_xpath(self.modal_initial_close_xpath) + self.driver.find_elements_by_xpath(self.modal_signin_close_xpath)
+        modal_window_objects = self.driver.driver.find_elements_by_xpath(self.modal_initial_close_xpath) + self.driver.driver.find_elements_by_xpath(self.modal_signin_close_xpath)
 
         # loop through modal window objects
         for modal_window in modal_window_objects:
@@ -60,14 +60,7 @@ class NAVIGATE:
             # close modal window
             if modal_window.is_enabled() and modal_window.is_displayed():
                 modal_window.click()
-                print('Navigate API Success: Closed Modal Window')
-
-                return True
-
-            else:
-                print('Navigate API Error: Unable To Close Active Modal Window')
-
-                return False
+                self.driver.logging.info('Closed Modal Window')
 
         return True
 
@@ -82,23 +75,23 @@ class NAVIGATE:
 
             # check if tab xpath exists
             # create tab object
-            if self.driver.find_elements_by_xpath(tab_xpath):
-                tab = self.driver.find_element_by_xpath(tab_xpath)
+            if self.driver.driver.find_elements_by_xpath(tab_xpath):
+                tab = self.driver.driver.find_element_by_xpath(tab_xpath)
 
                 # check if tab can be activated (clicked)
                 # activate tab
                 if tab.is_enabled() and tab.is_displayed():
                     tab.click()
-                    print('Navigate API Success: Clicked {} Tab'.format(tab_name))
+                    self.driver.logging.info('Clicked The {} Tab'.format(tab_name))
 
                     return True
 
                 else:
-                    print('Navigate API Error: Unable To Click {} Tab'.format(tab_name))
+                    self.driver.logging.error('Unable To Click The {} Tab'.format(tab_name))
             else:
-                print('Navigate API Error: Unable To Locate Tab Labeled {}'.format(tab_name))
+                self.driver.logging.error('Unable To Locate A Tab Labeled {}'.format(tab_name))
         else:
-            print('Navigate API Error: Unable To Click {} Tab Because Invalid Input For "tab_type" Parameter Provided'.format(tab_name))
+            self.driver.logging.error(' Unable To Click The {} Tab Because Invalid Parameter Input Provided'.format(tab_name))
 
         return False
 
@@ -114,12 +107,13 @@ class NAVIGATE:
             # check if toggle exists that only appears when user is logged in
             # create toggle object
             # create object to check if toggle is active
-            if self.driver.find_elements_by_xpath(self.cashout_toggle_xpath):
-                toggle = self.driver.find_element_by_xpath(self.cashout_toggle_xpath)
-                toggle_on = self.driver.find_elements_by_xpath(self.cashout_toggle_on_xpath)
+            if self.driver.driver.find_elements_by_xpath(self.cashout_toggle_xpath):
+                toggle = self.driver.driver.find_element_by_xpath(self.cashout_toggle_xpath)
+                toggle_on = self.driver.driver.find_elements_by_xpath(self.cashout_toggle_on_xpath)
 
                 # check if toggle is already set to user input (active/inactive)
                 if (active and toggle_on) or (not active and not toggle_on):
+                    self.driver.logging.info('Confirmed Cashout Toggle Is Already Set To {}'.format(active))
 
                     return True
 
@@ -127,16 +121,16 @@ class NAVIGATE:
                 # click toggle
                 if toggle.is_enabled() and toggle.is_displayed():
                     toggle.click()
-                    print('Navigate API Success: Switched Toggle To {}'.format(active))
+                    self.driver.logging.info('Switched Cashout Toggle To {}'.format(active))
 
                     return True
 
                 else:
-                    print('Navigate API Error: Unable To Locate Clickable Toggle')
+                    self.driver.logging.error('Unable To Locate Clickable Cashout Toggle')
             else:
-                print('Navigate API Error: Unable To Access Toggle Because User Not Logged In')
+                self.driver.logging.error('Unable To Access The Cashout Toggle Because A User Is Not Logged In')
         else:
-            print('Navigate API Error: Unable To Interact With Toggle Because Invalid Input For "active" Parameter Provided')
+            self.driver.logging.error('Unable To Interact With The Cashout Toggle Because Invalid Parameter Input Provided')
 
         return False
 

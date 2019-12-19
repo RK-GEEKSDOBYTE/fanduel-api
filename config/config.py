@@ -1,9 +1,12 @@
 class CONFIG:
+	log_file_directory = '/home/ubuntu/Desktop/fanduel-api/log/'
 	browser_refresh_int = 120
 	data_collection_int = 4
 	screen_load_wait = 10
 	driver_headless = False
 	driver_location = '/usr/lib/chromium-browser/chromedriver'
+	log_file_directory = '/home/ubuntu/Desktop/fanduel-api/log/'
+	debug = False
 	url = 'https://sportsbook.fanduel.com/sports'
 	sports =	{
 				'NBA': 					{

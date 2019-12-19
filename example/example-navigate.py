@@ -16,13 +16,15 @@ bri = config.browser_refresh_int
 dci = config.data_collection_int
 dh = config.driver_headless
 dl = config.driver_location
+lfd = config.log_file_directory
+dbg = config.debug
 url = config.url
 
 
 def main():
 
     # create driver object
-    driver = dri.DRIVER(browser_refresh_int=bri, driver_headless=dh, driver_location=dl, url=url)
+    driver = dri.DRIVER(browser_refresh_int=bri, driver_headless=dh, driver_location=dl, log_file_directory=lfd, debug=dbg, url=url)
     navigate = nav.NAVIGATE(driver=driver.driver)
 
     try:
@@ -49,16 +51,13 @@ def main():
         navigate.click_tab(tab_type='bet_type', tab_name='Standard')
         navigate.click_tab(tab_type='bet_type', tab_name='Teaser')
 
-        # close current driver instance windows
-        driver.driver.quit()
-
     except Exception as e:
         print(str(e))
 
-		# check if driver instance exists
-		# close current driver instance windows
-        if driver.driver:
-            driver.driver.quit()
+	# check if driver instance exists
+	# close current driver instance windows
+    if driver.driver:
+        driver.driver.quit()
 
 
 if __name__ == '__main__':

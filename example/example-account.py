@@ -20,13 +20,15 @@ dci = config.data_collection_int
 slw = config.screen_load_wait
 dh = config.driver_headless
 dl = config.driver_location
+lfd = config.log_file_directory
+dbg = config.debug
 url = config.url
 
 
 def main():
 
     # create driver object
-    driver = dri.DRIVER(browser_refresh_int=bri, driver_headless=dh, driver_location=dl, url=url)
+    driver = dri.DRIVER(browser_refresh_int=bri, driver_headless=dh, driver_location=dl, log_file_directory=lfd, debug=dbg, url=url)
     navigate = nav.NAVIGATE(driver=driver.driver)
     account = act.ACCOUNT(driver=driver.driver, screen_load_wait=slw)
 
@@ -74,17 +76,13 @@ def main():
         # logout of account
         account.logout()
 
-        # close current driver instance windows
-        driver.driver.quit()
-
-
     except Exception as e:
         print(str(e))
 
-		# check if driver instance exists
-		# close current driver instance windows
-        if driver.driver:
-            driver.driver.quit()
+	# check if driver instance exists
+	# close current driver instance windows
+    if driver.driver:
+        driver.driver.quit()
 
 
 if __name__ == '__main__':

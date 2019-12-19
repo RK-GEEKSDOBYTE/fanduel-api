@@ -1,6 +1,9 @@
 # import packages
+import os
 import time
+import datetime
 import requests
+import logging
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -13,16 +16,45 @@ from selenium.webdriver.chrome.options import Options
 
 class DRIVER:
 
-	def __init__(self, browser_refresh_int, driver_headless, driver_location, url):
+	def __init__(self, browser_refresh_int, driver_headless, driver_location, log_file_directory, debug, url):
 		self.browser_refresh_int = browser_refresh_int
 		self.driver_headless = driver_headless
 		self.driver_location = driver_location
+		self.log_file_directory = log_file_directory
+		self.debug = debug
 		self.url = url
 
 		# create webdriver instance
+		# setup logging configuration
 		# log initial time to track browser refresh requirement
+		self.setup_logging()
 		self.connect()
 		self.browser_refresh_complete_time = time.time()
+
+
+	# setup logging
+	def setup_logging(self):
+
+		# set logging configuration variables
+		debug_level = logging.DEBUG
+		log_level = logging.INFO
+		format = '%(asctime)s.%(msecs)03d [%(levelname)s] :: %(message)s [%(filename)s:%(lineno)d]'
+		datefmt = '%Y-%m-%d %H:%M:%S'
+		log_file_name = 'sys_' + str(datetime.date.today()) + ".log"
+		log_file_path = os.path.join(self.log_file_directory, log_file_name)
+
+		# create logging object
+		# set logging object configuration
+		self.logging = logging
+		self.logging.basicConfig(level=log_level, format=format, filename=log_file_path, datefmt=datefmt)
+
+		# check if debug set to True to display logging on console
+		# set up logging to console
+		if self.debug:
+			console = logging.StreamHandler()
+			console.setLevel(logging.DEBUG)
+			console.setFormatter(logging.Formatter(fmt=format, datefmt=datefmt))
+			self.logging.getLogger().addHandler(console)
 
 
 	# create webdriver instance
@@ -38,7 +70,7 @@ class DRIVER:
 		# navigate to webpage
 		self.driver = webdriver.Chrome(self.driver_location, chrome_options=options)
 		self.driver.get(self.url)
-		print('Driver API Success: Created Web Driver')
+		self.logging.info('Initialized Web Driver Instance')
 
 
 	# check internet connection
@@ -47,12 +79,12 @@ class DRIVER:
 		try:
 			# attempt to access website
 			requests.get('https://www.google.com', timeout=10)
-			print('Driver API Success: Internet Connection Exists')
+			self.logging.info('Confirmed Internet Connection Available')
 
 			return True
 
 		except:
-			print('Driver API Error: No Internet Connection')
+			self.logging.error('Internet Connection Not Available')
 
 		return False
 
@@ -65,12 +97,12 @@ class DRIVER:
 			# log browser refresh completed time
 			self.driver.refresh()
 			self.browser_refresh_complete_time = time.time()
-			print('Driver API Success: Refreshed Browser')
+			self.logging.info('Refreshed Driver Instance Browser')
 
 			return True
 
 		except:
-			print('Drive API Error: Unable To Refresh Browser')
+			self.logging.error('Unable To Refresh Driver Instance Browser')
 
 		return False
 
