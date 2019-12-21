@@ -16,11 +16,11 @@ from selenium.webdriver.chrome.options import Options
 
 class DRIVER:
 
-	def __init__(self, browser_refresh_int, driver_headless, driver_location, log_file_directory, debug, url):
+	def __init__(self, browser_refresh_int, driver_headless, driver_location, log_file_path, debug, url):
 		self.browser_refresh_int = browser_refresh_int
 		self.driver_headless = driver_headless
 		self.driver_location = driver_location
-		self.log_file_directory = log_file_directory
+		self.log_file_path = log_file_path
 		self.debug = debug
 		self.url = url
 
@@ -36,25 +36,24 @@ class DRIVER:
 	def setup_logging(self):
 
 		# set logging configuration variables
-		debug_level = logging.DEBUG
-		log_level = logging.INFO
 		format = '%(asctime)s.%(msecs)03d [%(levelname)s] :: %(message)s [%(filename)s:%(lineno)d]'
 		datefmt = '%Y-%m-%d %H:%M:%S'
-		log_file_name = 'sys_' + str(datetime.date.today()) + ".log"
-		log_file_path = os.path.join(self.log_file_directory, log_file_name)
+		formatter = logging.Formatter(fmt=format, datefmt=datefmt)
 
-		# create logging object
-		# set logging object configuration
-		self.logging = logging
-		self.logging.basicConfig(level=log_level, format=format, filename=log_file_path, datefmt=datefmt)
+		# create root logger
+		self.logging = logging.getLogger()
+		self.logging.setLevel(logging.INFO)
 
-		# check if debug set to True to display logging on console
-		# set up logging to console
+		fh = logging.FileHandler(filename=self.log_file_path)
+		fh.setLevel(logging.INFO)
+		fh.setFormatter(formatter)
+		self.logging.addHandler(fh)
+
 		if self.debug:
-			console = logging.StreamHandler()
-			console.setLevel(logging.DEBUG)
-			console.setFormatter(logging.Formatter(fmt=format, datefmt=datefmt))
-			self.logging.getLogger().addHandler(console)
+			sh = logging.StreamHandler()
+			sh.setLevel(logging.DEBUG)
+			sh.setFormatter(formatter)
+			self.logging.addHandler(sh)
 
 
 	# create webdriver instance

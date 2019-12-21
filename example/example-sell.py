@@ -21,7 +21,7 @@ dci = config.data_collection_int
 slw = config.screen_load_wait
 dh = config.driver_headless
 dl = config.driver_location
-lfd = config.log_file_directory
+lfp = config.log_file_path
 dbg = config.debug
 url = config.url
 
@@ -32,7 +32,7 @@ def main():
     # create navigate object
     # create account object
     # create bet object
-    driver = dri.DRIVER(browser_refresh_int=bri, driver_headless=dh, driver_location=dl, log_file_directory=lfd, debug=dbg, url=url)
+    driver = dri.DRIVER(browser_refresh_int=bri, driver_headless=dh, driver_location=dl, log_file_path=lfp, debug=dbg, url=url)
     navigate = nav.NAVIGATE(driver=driver.driver)
     account = act.ACCOUNT(driver=driver.driver, screen_load_wait=slw)
     sell = sl.SELL(driver=driver.driver, screen_load_wait=slw)
