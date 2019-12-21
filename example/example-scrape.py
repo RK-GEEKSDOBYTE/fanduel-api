@@ -38,8 +38,10 @@ def main():
 
 	try:
 
+        # wait a second for the modal window to load
 		# close modal window
 		# click Live group event tab
+		time.sleep(1)
 		navigate.close_modal_window()
 		navigate.click_tab(tab_type='event_group', tab_name='Live')
 

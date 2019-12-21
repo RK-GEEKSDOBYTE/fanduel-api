@@ -1,5 +1,6 @@
 # import packages
 import sys
+import time
 
 # import custom packages
 sys.path.append('..')
@@ -29,8 +30,8 @@ def main():
 
     # create driver object
     driver = dri.DRIVER(browser_refresh_int=bri, driver_headless=dh, driver_location=dl, log_file_path=lfp, debug=dbg, url=url)
-    navigate = nav.NAVIGATE(driver=driver.driver)
-    account = act.ACCOUNT(driver=driver.driver, screen_load_wait=slw)
+    navigate = nav.NAVIGATE(driver=driver)
+    account = act.ACCOUNT(driver=driver, screen_load_wait=slw)
 
     try:
 
@@ -38,7 +39,9 @@ def main():
         if not driver.check_internet_connection():
             raise Exception('No Internet Connection')
 
+        # wait a second for the modal window to load
 		# close modal window
+        time.sleep(1)
         navigate.close_modal_window()
 
         # login to account

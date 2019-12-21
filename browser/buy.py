@@ -12,7 +12,7 @@ from . import helper
 # define dynamic variables
 
 
-class BET:
+class BUY:
 
     def __init__(self, driver, screen_load_wait):
         self.driver = driver
@@ -99,7 +99,7 @@ class BET:
 
         # create default variables
         event_category_id = None
-        event_team_builder_id = None
+        team_id = None
 
         # check if bet_type and type parameter inputs are valid
         if bet_type in self.bet_types and type in self.types:
@@ -125,20 +125,20 @@ class BET:
                 team_names = self.driver.driver.find_elements_by_xpath(teams_xpath)
 
                 # loop through teams
-                for i, item in enumerate(team_names):
+                for j, item in enumerate(team_names):
 
                     # check if team exists
                     # update event_team_builder variable (increment by 1 since selenium starts with index 1)
                     if team_names[i].text == team_name:
-                        event_team_builder_id = i + 1
+                        team_id = j + 1
                         break
 
                 # check if event/team div builder id exists
                 # assign event and team div ids
                 # create moneyline xpath
-                if event_team_builder_id:
-                    event_div_id = round((i / 2) + .01)
-                    team_div_id = 2 if i % 2 == 0 else 1
+                if team_id:
+                    event_div_id = round((event_category_id / 2) + .01)
+                    team_div_id = 2 if team_id % 2 == 0 else 1
                     bet_type_button_xpath = self.bet_type_button_xpath_placeholder.format(event_category_id, event_div_id, self.bet_types[bet_type]['xpath_class'], team_div_id)
 
                     try:
