@@ -68,7 +68,7 @@ class BUY:
                 WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.delete_all_bets_xpath)))
 
             except TimeoutException:
-                self.driver.logging.error('Unable To Locate The Clickable Delete All Bets Button')
+                self.driver.logging.error('Unable To Locate A Clickable Delete All Bets Button')
 
                 return False
 
@@ -84,18 +84,20 @@ class BUY:
                 return True
 
             except TimeoutException:
-                self.driver.logging.error('Submission To Delete All Bets Exceeded Time Limit')
+                self.driver.logging.error('Delete All Bets Submission Exceeded Time Limit')
 
                 return True
 
         else:
-            self.driver.logging.error('Unable To Locate The Delete All Bets Button')
+            self.driver.logging.error('Unable To Locate A Delete All Bets Button')
 
         return False
 
 
     # submit bet
     def buy(self, bet_amount, league, team_name, compare_bet_type_value, bet_type='moneyline', type='equal'):
+
+        self.driver.logging.info('Initiating Process To Buy ${} {} Bet On The {} For {} ({})'.format(bet_amount, bet_type, team_name, compare_bet_type_value, type))
 
         # create default variables
         event_category_id = None
@@ -146,7 +148,7 @@ class BUY:
                         WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, bet_type_button_xpath)))
 
                     except TimeoutException:
-                        self.driver.logging.error('Unable To Locate The Clickable Button Labeled {}'.format(bet_type.title()))
+                        self.driver.logging.error('Unable To Submit A ${} {} Bet On The {} For {} ({}) Because A Clickable Button Labeled {} Could Not Located'.format(bet_amount, bet_type, team_name, compare_bet_type_value, type, bet_type.title()))
 
                         return False
 
@@ -167,12 +169,12 @@ class BUY:
                             bet_type_value = int(bet_type_value) if helper.is_int(input=bet_type_value) else bet_type_value
 
                         if not helper.is_int(input=bet_type_value) and not helper.is_float(input=bet_type_value):
-                            self.driver.logging.error('Unable To Convert The {} Button Value To Int/Float'.format(bet_type.title()))
+                            self.driver.logging.error('Unable To Submit A ${} {} Bet On The {} For {} ({}) Because The {} Button Value Could Not Be Converted To Int/Float'.format(bet_amount, bet_type, team_name, compare_bet_type_value, type, bet_type.title()))
 
                             return False
 
                     except:
-                        self.driver.logging.error('Unable To Extract The {} Button Value'.format(bet_type.title()))
+                        self.driver.logging.error('Unable To Submit A ${} {} Bet On The {} For {} ({}) Because The {} Button Value Could Not Be Extracted'.format(bet_amount, bet_type, team_name, compare_bet_type_value, type, bet_type.title()))
 
                         return False
 
@@ -192,7 +194,7 @@ class BUY:
                             self.driver.logging.info('Loaded Betslip Form')
 
                         except TimeoutException:
-                            self.driver.logging.error('Betslip Form Load Exceeded Time Limit')
+                            self.driver.logging.error('Unable To Submit A ${} {} Bet On The {} For {} ({}) Because The Betslip Form Render Exceeded Time Limit'.format(bet_amount, bet_type, team_name, compare_bet_type_value, type))
 
                             return False
 
@@ -202,21 +204,21 @@ class BUY:
                             # wait for odds changed banner or place bet button to exist
                             bet_amount_field = self.driver.driver.find_element_by_xpath(self.bet_amount_field_xpath)
                             bet_amount_field.send_keys(bet_amount)
-                            self.driver.logging.info('Populated Bet Amount Field')
+                            self.driver.logging.info('Populated Bet Amount On Betslip')
                             WebDriverWait(self.driver.driver, self.screen_load_wait).until(
                                 lambda driver: driver.find_elements(By.XPATH, self.odds_changed_banner_xpath) or driver.find_elements(By.XPATH, self.place_bet_button_xpath))
 
                             # check if odds changed banner appeared
                             # delete all bets
                             if self.driver.driver.find_elements_by_xpath(self.odds_changed_banner_xpath):
-                                self.driver.logging.error('Unable To Process The Bet Because The Odds Changed')
+                                self.driver.logging.error('Unable To Submit A ${} {} Bet On The {} For {} ({}) Because The Odds Changed After Populating Bet Amount'.format(bet_amount, bet_type, team_name, compare_bet_type_value, type))
                                 self.delete_bets()
 
                                 return False
 
                         except TimeoutException:
                             # delete all bets
-                            self.driver.logging.error('Bet Amount Field Population Exceeded Time Limit')
+                            self.driver.logging.error('Unable To Submit A ${} {} Bet On The {} For {} ({}) Because The Bet Amount Population Exceeded Time Limit'.format(bet_amount, bet_type, team_name, compare_bet_type_value, type))
                             self.delete_bets()
 
                             return False
@@ -233,13 +235,13 @@ class BUY:
                             # check if odds changed banner appeared
                             # delete all bets
                             if self.driver.driver.find_elements_by_xpath(self.odds_changed_banner_xpath):
-                                self.driver.logging.error('Unable To Process Bet Because The Odds Changed')
+                                self.driver.logging.error('Unable To Submit A ${} {} Bet On The {} For {} ({}) Because The Odds Changed After Submitting The Bet'.format(bet_amount, bet_type, team_name, compare_bet_type_value, type))
                                 self.delete_bets()
 
                                 return False
 
                             else:
-                                self.driver.logging.info('Bet Submission Processed')
+                                self.driver.logging.info('Bet Submitted')
 
                         except TimeoutException:
                             self.driver.logging.error('Bet Submission Exceeded Time Limit')
@@ -254,10 +256,10 @@ class BUY:
                             bet_reference_id = None
                             WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.presence_of_element_located((By.XPATH, self.bet_reference_id_xpath)))
                             bet_reference_id = self.driver.driver.find_element_by_xpath(self.bet_reference_id_xpath).text
-                            self.driver.logging.info('Extracted Bet Reference ID ({})'.format(bet_reference_id))
+                            self.driver.logging.info('Extracted A Bet Reference ID ({})'.format(bet_reference_id))
 
                         except TimeoutException:
-                            self.driver.logging.error('Unable To Extract Bet Reference ID')
+                            self.driver.logging.error('Unable To Extract A Bet Reference ID')
 
                         try:
                             # create bet confirmation button object
@@ -266,23 +268,23 @@ class BUY:
                             bet_confirmation_button = self.driver.driver.find_element_by_xpath(self.bet_confirmation_exit_button_xpath)
                             bet_confirmation_button.click()
                             WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.presence_of_element_located((By.XPATH, self.betslip_empty_xpath)))
-                            self.driver.logging.info('Betslip Emptied After Purchase')
+                            self.driver.logging.info('Betslip Emptied')
 
                         except TimeoutException:
-                            self.driver.logging.error('Emptying Betslip After Purchase Exceeded Time Limit')
+                            self.driver.logging.error('Emptying Betslip Submission Exceeded Time Limit')
 
                         return bet_reference_id
 
                     else:
-                        self.driver.logging.error('Desired Bet Based On Parameter Inputs Is Not Available')
+                        self.driver.logging.error('Unable To Submit A ${} {} Bet On The {} For {} ({}) Because The Current Value Is {}'.format(bet_amount, bet_type, team_name, compare_bet_type_value, type, bet_type_value))
                 else:
-                    self.driver.logging.error('Unable To Locate The Event ID')
+                    self.driver.logging.error('Unable To Submit A ${} {} Bet On The {} For {} ({}) Because The Event Could Not Be Located'.format(bet_amount, bet_type, team_name, compare_bet_type_value, type))
             else:
-                self.driver.logging.error('Unable To Locate The Event Category ID')
+                self.driver.logging.error('Unable To Submit A ${} {} Bet On The {} For {} ({}) Because The {} Category Could Not Be Located'.format(bet_amount, bet_type, team_name, compare_bet_type_value, type, league))
         elif bet_type not in self.bet_types:
-            self.driver.logging.error('Unable To Trigger A Bet Because Invalid Parameter Inputs Were Provided')
+            self.driver.logging.error('Unable To Submit A ${} {} Bet On The {} For {} ({}) Because An Invalid Parameter Input Was Provided For bet_types'.format(bet_amount, bet_type, team_name, compare_bet_type_value, type))
         elif type not in self.types:
-            self.driver.logging.error('Unable To Trigger A Bet Because Invalid Parameter Inputs Were Provided')
+            self.driver.logging.error('Unable To Submit A ${} {} Bet On The {} For {} ({}) Because An Invalid Parameter Input Was Provided For types'.format(bet_amount, bet_type, team_name, compare_bet_type_value, type))
 
         return False
 

@@ -91,7 +91,7 @@ class NAVIGATE:
             else:
                 self.driver.logging.error('Unable To Locate A Tab Labeled {}'.format(tab_name))
         else:
-            self.driver.logging.error('Unable To Click The {} Tab Because Invalid Parameter Inputs Were Provided'.format(tab_name))
+            self.driver.logging.error('Unable To Click The {} Tab Because An Invalid Parameter Input Was Provided For tab_type'.format(tab_name))
 
         return False
 
@@ -126,11 +126,11 @@ class NAVIGATE:
                     return True
 
                 else:
-                    self.driver.logging.error('Unable To Locate The Clickable Cashout Toggle')
+                    self.driver.logging.error('Unable To Locate A Clickable Cashout Toggle')
             else:
                 self.driver.logging.error('Unable To Access The Cashout Toggle Because A User Is Not Logged In')
         else:
-            self.driver.logging.error('Unable To Interact With The Cashout Toggle Because Invalid Parameter Input Provided')
+            self.driver.logging.error('Unable To Interact With The Cashout Toggle Because An Invalid Parameter Input Was Provided For active')
 
         return False
 

@@ -65,7 +65,7 @@ class ACCOUNT:
                 WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_form_exit_xpath)))
 
             except TimeoutException:
-                self.driver.logging.error('Unable To Locate Clickable Exit Button On Login Form')
+                self.driver.logging.error('Unable To Locate A Clickable Exit Button On The Login Form')
 
                 return False
 
@@ -76,22 +76,25 @@ class ACCOUNT:
                 login_form_exit_image = self.driver.driver.find_element_by_xpath(self.login_form_exit_xpath)
                 login_form_exit_image.click()
                 WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_link_xpath)))
+                self.driver.logging.info('Closed The Login Form')
 
                 return True
 
             except TimeoutException:
-                self.driver.logging.error('Unable To Locate Clickable Login Link After Closing Login Form')
+                self.driver.logging.error('Unable To Locate A Clickable Login Link After Closing The Login Form')
 
                 return False
 
         else:
-            self.driver.logging.error('Unable To Locate Exit Button On Login Form')
+            self.driver.logging.error('Unable To Locate An Exit Button On The Login Form')
 
         return False
 
 
     # log user into account
     def login(self, username, password):
+
+        self.driver.logging.info('Initiating Process To Login')
 
         # check if user has provied provided credentials
         # check if user is already logged in
@@ -102,7 +105,7 @@ class ACCOUNT:
                 WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_link_xpath)))
 
             except TimeoutException:
-                self.driver.logging.error('Unable To Locate Clickable Login Link')
+                self.driver.logging.error('Unable To Locate A Clickable Login Link')
 
                 return False
 
@@ -126,7 +129,7 @@ class ACCOUNT:
 
             except TimeoutException:
                 # close login form
-                self.driver.logging.error('Unable To Locate Clickable Username/Password Fields On Login Form')
+                self.driver.logging.error('Unable To Locate Clickable Username/Password Fields On The Login Form')
                 self.close_login_form()
 
                 return False
@@ -143,7 +146,7 @@ class ACCOUNT:
 
             except TimeoutException:
                 # close login form
-                self.driver.logging.error('Unable To Locate Clickable Submit Button On Login Form')
+                self.driver.logging.error('Unable To Locate A Clickable Submit Button On The Login Form')
                 self.close_login_form()
 
                 return False
@@ -166,31 +169,37 @@ class ACCOUNT:
 
             # check if user successfuly logged in
             if self.driver.driver.find_elements_by_xpath(self.logged_in_xpath):
-                self.driver.logging.info('Logged Into System As {}'.format(username))
+                self.driver.logging.info('Logged In As {}'.format(username))
 
                 return True
 
             # check if invalid credentials banner exists
             # close login form
             elif self.driver.driver.find_elements_by_xpath(self.invalid_credentials_xpath):
-                self.driver.logging.error('Invalid Credentials Provided For Username {}'.format(username))
+                self.driver.logging.error('Unable To Login Because Invalid Credentials Were Provided For {}'.format(username))
                 self.close_login_form()
 
                 return False
 
-        # check if username or password not provided
-        elif not username or not password:
-            self.driver.logging.error('Username And/Or Password Input Parameters Not Provided')
+        # check if username was not provided
+        elif not username:
+            self.driver.logging.error('Unable To Login Because A Username Was Not Provided')
+
+        # check if password was not provided
+        elif not password:
+            self.driver.logging.error('Unable To Login Because A Password Was Not Provided')
 
         # check if user is already logged in
         elif self.check_logged_in():
-            self.driver.logging.error('User Already Logged In')
+            self.driver.logging.error('Unable To Login Because A User Is Already Logged In')
 
         return False
 
 
     # log user out of account
     def logout(self):
+
+        self.driver.logging.info('Initiating Process To Logout')
 
         # check if user is already logged in
         if self.check_logged_in():
@@ -200,7 +209,7 @@ class ACCOUNT:
                 WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.account_menu_xpath)))
 
             except TimeoutException:
-                self.driver.logging.error('Unable To Locate Clickable Account Menu')
+                self.driver.logging.error('Unable To Locate A Clickable Account Menu')
 
                 return False
 
@@ -214,7 +223,7 @@ class ACCOUNT:
 
             except:
                 # close account menu
-                self.driver.logging.error('Unable To Locate Clickable Account Menu Logout Item')
+                self.driver.logging.error('Unable To Locate A Clickable Account Menu Logout Item')
                 account_menu.click()
 
                 return False
@@ -228,7 +237,7 @@ class ACCOUNT:
                 WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.logout_confirmation_button_xpath)))
 
             except:
-                self.driver.logging.error('Unable To Locate Clickable Logout Confirmation Button')
+                self.driver.logging.error('Unable To Locate A Clickable Logout Confirmation Button')
 
                 return False
 
@@ -239,17 +248,17 @@ class ACCOUNT:
                 logout_confirmation_button = self.driver.driver.find_element_by_xpath(self.logout_confirmation_button_xpath)
                 logout_confirmation_button.click()
                 WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.presence_of_element_located((By.XPATH, self.login_link_xpath)))
-                self.driver.logging.info('Logged Out Of System')
+                self.driver.logging.info('Logged Out')
 
                 return True
 
             except:
-                self.driver.logging.error('Unable To Locate Clickable Login Link After Logging Out')
+                self.driver.logging.error('Unable To Locate A Clickable Login Link After Logging Out')
 
                 return False
 
         else:
-            self.driver.logging.error('Unable To Logout Because User Not Logged In')
+            self.driver.logging.error('Unable To Logout Because A User Is Not Logged In')
 
         return False
 
@@ -280,11 +289,11 @@ class ACCOUNT:
 
         # check if invalid parameter input provided
         elif information_type not in self.information_type_xpaths:
-            self.driver.logging.error('Unable To Retrieve Information Because Invalid Input For Parameter Provided')
+            self.driver.logging.error('Unable To Retrieve Information Because Because Invalid Parameter Input Was Provided For information_type')
 
         # check if user logged in
         elif not self.check_logged_in():
-            self.driver.logging.error('Unable To Retrieve {} Information Because User Not Logged In'.format(information_type.replace('_', ' ').title()))
+            self.driver.logging.error('Unable To Retrieve {} Information Because A User Is Not Logged In'.format(information_type.replace('_', ' ').title()))
 
         return False
 

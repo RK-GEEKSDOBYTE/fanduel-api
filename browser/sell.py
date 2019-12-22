@@ -40,6 +40,8 @@ class SELL:
     # sell bet
     def sell(self, reference_id, compare_moneyline_value, type='equal'):
 
+        self.driver.logging.info('Initiating Process To Sell Bet #{}'.format(reference_id))
+
         # create default variable
         active_bet_order = None
 
@@ -87,7 +89,7 @@ class SELL:
                     current_moneyline = int(current_moneyline) if helper.is_int(input=current_moneyline) else current_moneyline
 
                 except TimeoutException:
-                    self.driver.logging.error('Unable Sell Bet #{} Because Current Bet Type (Odds/Moneyline/Points) Value Could Not Be Located'.format(reference_id))
+                    self.driver.logging.error('Unable To Sell Bet #{} Because The Current Bet Type (Odds/Moneyline/Points) Value Could Not Be Located'.format(reference_id))
 
                     return False
 
@@ -101,7 +103,7 @@ class SELL:
                         sell_button = self.driver.driver.find_element_by_xpath(self.sell_button_xpath)
 
                     except TimeoutException:
-                        self.driver.logging.error('Unable To Sell Bet #{} Because Clickable Sell Button Could Not Be Located'.format(reference_id))
+                        self.driver.logging.error('Unable To Sell Bet #{} Because A Clickable Sell Button Could Not Be Located'.format(reference_id))
 
                         return False
 
@@ -119,7 +121,7 @@ class SELL:
                             self.driver.logging.info('Clicked The Sell Button For Bet #{}'.format(reference_id))
 
                         except TimeoutException:
-                            self.driver.logging.error('Unable To Sell Bet #{} Because The Submission Was Unable To Complete After Clicking The Sell Button'.format(reference_id))
+                            self.driver.logging.error('Unable To Sell Bet #{} Because The Submission Did Not Complete After Clicking The Sell Button'.format(reference_id))
 
                             return False
 
@@ -134,18 +136,18 @@ class SELL:
                             return True
 
                         except TimeoutException:
-                            self.driver.logging.error('Unable To Sell Bet #{} Because The Submission Was Unable To Complete After Clicking The Sell Confirmation Button'.format(reference_id))
+                            self.driver.logging.error('Unable To Sell Bet #{} Because The Submission Did Not Complete After Clicking The Sell Confirmation Button'.format(reference_id))
 
                             return False
 
                     else:
-                        self.driver.logging.error('Unable To Sell Bet #{} Because Sale Does Not Meet Provided Parameters'.format(reference_id))
+                        self.driver.logging.error('Unable To Sell Bet #{} For {} ({}) Because Current Value Is {}'.format(reference_id, compare_bet_type_value, type, current_moneyline))
                 else:
-                    self.driver.logging.error('Unable To Sell Bet #{} Because Current Bet Type (Odds/Moneyline/Points) Value Is Not A Number'.format(reference_id))
+                    self.driver.logging.error('Unable To Sell Bet #{} Because The Current Bet Type (Odds/Moneyline/Points) Value Is Not A Number'.format(reference_id))
             else:
-                self.driver.logging.error('Unable To Sell Bet #{} Because Bet Could Not Be Located'.format(reference_id))
+                self.driver.logging.error('Unable To Sell Bet #{} Because The Bet Could Not Be Located'.format(reference_id))
         elif type not in self.types:
-            self.driver.logging.error('Unable To Sell Bet #{} Because Invalid Parameter Inputs Were Provided'.format(reference_id))
+            self.driver.logging.error('Unable To Sell Bet #{} Because An Invalid Parameter Input Was Provided For type'.format(reference_id))
 
         return False
 
