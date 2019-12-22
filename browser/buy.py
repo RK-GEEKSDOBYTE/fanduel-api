@@ -129,7 +129,7 @@ class BUY:
 
                     # check if team exists
                     # update event_team_builder variable (increment by 1 since selenium starts with index 1)
-                    if team_names[i].text == team_name:
+                    if team_names[j].text == team_name:
                         team_id = j + 1
                         break
 
