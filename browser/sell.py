@@ -51,7 +51,7 @@ class SELL:
                 WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.presence_of_element_located((By.XPATH, self.active_bet_reference_ids_xpath)))
 
             except TimeoutException:
-                self.driver.logging.error('Unable To Locate Any Active Bets')
+                self.driver.logging.error('Unable To Sell Bet #{} Because No Active Bets Could Be Located'.format(reference_id))
 
                 return False
 
@@ -64,7 +64,7 @@ class SELL:
                 # update active_bet_order variable (increment by 1 since selenium starts with index 1)
                 if str(reference_id) in item.text:
                     active_bet_order = i + 1
-                    self.driver.logging.info('Located Bet #{} Requested To Sell'.format(reference_id))
+                    self.driver.logging.info('Located Bet #{}'.format(reference_id))
 
                     break
 
@@ -80,14 +80,14 @@ class SELL:
                     # get active bet current moneyline
                     WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.presence_of_element_located((By.XPATH, self.active_bet_current_moneyline_xpath)))
                     current_moneyline = self.driver.driver.find_element_by_xpath(self.active_bet_current_moneyline_xpath).text
-                    self.driver.logging.info('Located Current Moneyline Value Required To Sell')
+                    self.driver.logging.info('Located The Current Bet Type (Odds/Moneyline/Points) Value For Bet #{}'.format(reference_id))
 
                     # convert to int type if possible
                     current_moneyline = helper.int_regex(input=current_moneyline)
                     current_moneyline = int(current_moneyline) if helper.is_int(input=current_moneyline) else current_moneyline
 
                 except TimeoutException:
-                    self.driver.logging.error('Unable To Locate Current Moneyline Value Required To Sell')
+                    self.driver.logging.error('Unable Sell Bet #{} Because Current Bet Type (Odds/Moneyline/Points) Value Could Not Be Located'.format(reference_id))
 
                     return False
 
@@ -101,7 +101,7 @@ class SELL:
                         sell_button = self.driver.driver.find_element_by_xpath(self.sell_button_xpath)
 
                     except TimeoutException:
-                        self.driver.logging.error('Unable To Locate Clickable Sell Button')
+                        self.driver.logging.error('Unable To Sell Bet #{} Because Clickable Sell Button Could Not Be Located'.format(reference_id))
 
                         return False
 
@@ -116,10 +116,10 @@ class SELL:
                             # wait for sell confirmation button to appear
                             sell_button.click()
                             WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.sell_confirmation_button_xpath)))
-                            self.driver.logging.info('Clicked Sell Button')
+                            self.driver.logging.info('Clicked The Sell Button For Bet #{}'.format(reference_id))
 
                         except TimeoutException:
-                            self.driver.logging.error('Unable To Complete Process After Clicking Sell Button')
+                            self.driver.logging.error('Unable To Sell Bet #{} Because The Submission Was Unable To Complete After Clicking The Sell Button'.format(reference_id))
 
                             return False
 
@@ -134,19 +134,18 @@ class SELL:
                             return True
 
                         except TimeoutException:
-                            self.driver.logging.error('Unable To Complete Process After Clicking Sell Confirmation Button')
+                            self.driver.logging.error('Unable To Sell Bet #{} Because The Submission Was Unable To Complete After Clicking The Sell Confirmation Button'.format(reference_id))
 
                             return False
 
                     else:
-                        self.driver.logging.error('Desired Bet Based On Parameters Is Not Available')
-                        print('Bet API Error: Desired Bet Based On Parameters Is Not Available')
+                        self.driver.logging.error('Unable To Sell Bet #{} Because Sale Does Not Meet Provided Parameters'.format(reference_id))
                 else:
-                    self.driver.logging.error('Current Moneyline Value Required To Sell Not A Number')
+                    self.driver.logging.error('Unable To Sell Bet #{} Because Current Bet Type (Odds/Moneyline/Points) Value Is Not A Number'.format(reference_id))
             else:
-                self.driver.logging.error('Unable To Locate Bet #'.format(reference_id))
+                self.driver.logging.error('Unable To Sell Bet #{} Because Bet Could Not Be Located'.format(reference_id))
         elif type not in self.types:
-            self.driver.logging.error('Unable To Sell Because Invalid Parameter Input Provided')
+            self.driver.logging.error('Unable To Sell Bet #{} Because Invalid Parameter Inputs Were Provided'.format(reference_id))
 
         return False
 

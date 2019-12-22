@@ -68,7 +68,7 @@ class BUY:
                 WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.delete_all_bets_xpath)))
 
             except TimeoutException:
-                self.driver.logging.error('Unable To Locate Clickable Delete All Bets Button')
+                self.driver.logging.error('Unable To Locate The Clickable Delete All Bets Button')
 
                 return False
 
@@ -89,7 +89,7 @@ class BUY:
                 return True
 
         else:
-            self.driver.logging.error('Unable To Locate Delete All Bets Button')
+            self.driver.logging.error('Unable To Locate The Delete All Bets Button')
 
         return False
 
@@ -146,7 +146,7 @@ class BUY:
                         WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, bet_type_button_xpath)))
 
                     except TimeoutException:
-                        self.driver.logging.error('Unable To Locate Clickable Button Labeled {}'.format(bet_type.title()))
+                        self.driver.logging.error('Unable To Locate The Clickable Button Labeled {}'.format(bet_type.title()))
 
                         return False
 
@@ -167,12 +167,12 @@ class BUY:
                             bet_type_value = int(bet_type_value) if helper.is_int(input=bet_type_value) else bet_type_value
 
                         if not helper.is_int(input=bet_type_value) and not helper.is_float(input=bet_type_value):
-                            self.driver.logging.error('Unable To Convert {} Button Value To Int/Float'.format(bet_type.title()))
+                            self.driver.logging.error('Unable To Convert The {} Button Value To Int/Float'.format(bet_type.title()))
 
                             return False
 
                     except:
-                        self.driver.logging.error('Unable To Extract {} Button Value'.format(bet_type.title()))
+                        self.driver.logging.error('Unable To Extract The {} Button Value'.format(bet_type.title()))
 
                         return False
 
@@ -189,10 +189,10 @@ class BUY:
                             bet_type_button = self.driver.driver.find_element_by_xpath(bet_type_button_xpath)
                             bet_type_button.click()
                             WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.bet_amount_field_xpath)))
-                            self.driver.logging.info('Loaded Betslip Form To Initiate Bet')
+                            self.driver.logging.info('Loaded Betslip Form')
 
                         except TimeoutException:
-                            self.driver.logging.error('Betslip Form Load To Initiate Bet Exceeded Time Limit')
+                            self.driver.logging.error('Betslip Form Load Exceeded Time Limit')
 
                             return False
 
@@ -209,7 +209,7 @@ class BUY:
                             # check if odds changed banner appeared
                             # delete all bets
                             if self.driver.driver.find_elements_by_xpath(self.odds_changed_banner_xpath):
-                                self.driver.logging.error('Unable To Process Bet Because The Odds Changed')
+                                self.driver.logging.error('Unable To Process The Bet Because The Odds Changed')
                                 self.delete_bets()
 
                                 return False
@@ -276,13 +276,13 @@ class BUY:
                     else:
                         self.driver.logging.error('Desired Bet Based On Parameter Inputs Is Not Available')
                 else:
-                    self.driver.logging.error('Unable To Locate Event ID')
+                    self.driver.logging.error('Unable To Locate The Event ID')
             else:
-                self.driver.logging.error('Unable To Locate Event Category ID')
+                self.driver.logging.error('Unable To Locate The Event Category ID')
         elif bet_type not in self.bet_types:
-            self.driver.logging.error('Unable To Trigger Bet Because Invalid Parameter Input Provided')
+            self.driver.logging.error('Unable To Trigger A Bet Because Invalid Parameter Inputs Were Provided')
         elif type not in self.types:
-            self.driver.logging.error('Unable To Trigger Bet Because Invalid Parameter Input Provided')
+            self.driver.logging.error('Unable To Trigger A Bet Because Invalid Parameter Inputs Were Provided')
 
         return False
 

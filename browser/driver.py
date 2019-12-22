@@ -41,14 +41,22 @@ class DRIVER:
 		formatter = logging.Formatter(fmt=format, datefmt=datefmt)
 
 		# create root logger
+		# set default logging level
 		self.logging = logging.getLogger()
 		self.logging.setLevel(logging.INFO)
 
+		# create file logging system
+		# set file logging system level & format
+		# add file logging system
 		fh = logging.FileHandler(filename=self.log_file_path)
 		fh.setLevel(logging.INFO)
 		fh.setFormatter(formatter)
 		self.logging.addHandler(fh)
 
+		# check if debug set to True
+		# create console logging system
+		# set console logging system level & format
+		# add console logging system
 		if self.debug:
 			sh = logging.StreamHandler()
 			sh.setLevel(logging.DEBUG)
@@ -78,12 +86,12 @@ class DRIVER:
 		try:
 			# attempt to access website
 			requests.get('https://www.google.com', timeout=10)
-			self.logging.info('Confirmed Internet Connection Available')
+			self.logging.info('Confirmed An Internet Connection Available')
 
 			return True
 
 		except:
-			self.logging.error('Internet Connection Not Available')
+			self.logging.error('Internet Connection Is Not Available')
 
 		return False
 
@@ -96,12 +104,12 @@ class DRIVER:
 			# log browser refresh completed time
 			self.driver.refresh()
 			self.browser_refresh_complete_time = time.time()
-			self.logging.info('Refreshed Driver Instance Browser')
+			self.logging.info('Refreshed The Driver Instance Browser')
 
 			return True
 
 		except:
-			self.logging.error('Unable To Refresh Driver Instance Browser')
+			self.logging.error('Unable To Refresh The Driver Instance Browser')
 
 		return False
 

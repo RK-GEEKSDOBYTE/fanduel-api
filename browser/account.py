@@ -65,7 +65,7 @@ class ACCOUNT:
                 WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_form_exit_xpath)))
 
             except TimeoutException:
-                print('Account API Error: Unable To Locate Clickable Exit Button On Login Form')
+                self.driver.logging.error('Unable To Locate Clickable Exit Button On Login Form')
 
                 return False
 
@@ -80,12 +80,12 @@ class ACCOUNT:
                 return True
 
             except TimeoutException:
-                print('Account API Error: Unable To Locate Clickable Login Link After Closing Login Form')
+                self.driver.logging.error('Unable To Locate Clickable Login Link After Closing Login Form')
 
                 return False
 
         else:
-            print('Account API Error: Unable To Locate Exit Button On Login Form')
+            self.driver.logging.error('Unable To Locate Exit Button On Login Form')
 
         return False
 
@@ -102,7 +102,7 @@ class ACCOUNT:
                 WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.login_link_xpath)))
 
             except TimeoutException:
-                print('Account API Error: Unable To Locate Clickable Login Link')
+                self.driver.logging.error('Unable To Locate Clickable Login Link')
 
                 return False
 
@@ -115,7 +115,7 @@ class ACCOUNT:
                 WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.presence_of_element_located((By.XPATH, self.login_form_xpath)))
 
             except TimeoutException:
-                print('Account API Error: Login Form Render Exceeded Time Limit')
+                self.driver.logging.error('Login Form Render Exceeded Time Limit')
 
                 return False
 
@@ -126,7 +126,7 @@ class ACCOUNT:
 
             except TimeoutException:
                 # close login form
-                print('Account API Error: Unable To Locate Clickable Username/Password Fields On Login Form')
+                self.driver.logging.error('Unable To Locate Clickable Username/Password Fields On Login Form')
                 self.close_login_form()
 
                 return False
@@ -143,7 +143,7 @@ class ACCOUNT:
 
             except TimeoutException:
                 # close login form
-                print('Account API Error: Unable To Locate Clickable Submit Button On Login Form')
+                self.driver.logging.error('Unable To Locate Clickable Submit Button On Login Form')
                 self.close_login_form()
 
                 return False
@@ -159,32 +159,32 @@ class ACCOUNT:
 
             except TimeoutException:
                 # close login form
-                print('Account API Error: Login Form Submission Exceeded Time Limit')
+                self.driver.logging.error('Login Form Submission Exceeded Time Limit')
                 self.close_login_form()
 
                 return False
 
             # check if user successfuly logged in
             if self.driver.driver.find_elements_by_xpath(self.logged_in_xpath):
-                print('Account API Success: Logged Into System As {}'.format(username))
+                self.driver.logging.info('Logged Into System As {}'.format(username))
 
                 return True
 
             # check if invalid credentials banner exists
             # close login form
             elif self.driver.driver.find_elements_by_xpath(self.invalid_credentials_xpath):
-                print('Account API Error: Invalid Credentials Provided For Username {}'.format(username))
+                self.driver.logging.error('Invalid Credentials Provided For Username {}'.format(username))
                 self.close_login_form()
 
                 return False
 
         # check if username or password not provided
         elif not username or not password:
-            print('Account API Error: Username And/Or Password Input Parameters Not Provided')
+            self.driver.logging.error('Username And/Or Password Input Parameters Not Provided')
 
         # check if user is already logged in
         elif self.check_logged_in():
-            print('Account API Error: User Already Logged In')
+            self.driver.logging.error('User Already Logged In')
 
         return False
 
@@ -200,7 +200,7 @@ class ACCOUNT:
                 WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.account_menu_xpath)))
 
             except TimeoutException:
-                print('Account API Error: Unable To Locate Clickable Account Menu')
+                self.driver.logging.error('Unable To Locate Clickable Account Menu')
 
                 return False
 
@@ -214,7 +214,7 @@ class ACCOUNT:
 
             except:
                 # close account menu
-                print('Account API Error: Unable To Locate Clickable Account Menu Logout Item')
+                self.driver.logging.error('Unable To Locate Clickable Account Menu Logout Item')
                 account_menu.click()
 
                 return False
@@ -228,7 +228,7 @@ class ACCOUNT:
                 WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.element_to_be_clickable((By.XPATH, self.logout_confirmation_button_xpath)))
 
             except:
-                print('Account API Error: Unable To Locate Clickable Logout Confirmation Button')
+                self.driver.logging.error('Unable To Locate Clickable Logout Confirmation Button')
 
                 return False
 
@@ -239,17 +239,17 @@ class ACCOUNT:
                 logout_confirmation_button = self.driver.driver.find_element_by_xpath(self.logout_confirmation_button_xpath)
                 logout_confirmation_button.click()
                 WebDriverWait(self.driver.driver, self.screen_load_wait).until(EC.presence_of_element_located((By.XPATH, self.login_link_xpath)))
-                print('Account API Success: Logged Out Of System')
+                self.driver.logging.info('Logged Out Of System')
 
                 return True
 
             except:
-                print('Account API Error: Unable To Locate Clickable Login Link After Logging Out')
+                self.driver.logging.error('Unable To Locate Clickable Login Link After Logging Out')
 
                 return False
 
         else:
-            print('Account API Error: Unable To Logout Because User Not Logged In')
+            self.driver.logging.error('Unable To Logout Because User Not Logged In')
 
         return False
 
@@ -271,20 +271,20 @@ class ACCOUNT:
             if self.driver.driver.find_elements_by_xpath(information_type_xpath):
                 label_information = self.driver.driver.find_element_by_xpath(information_type_xpath).text
                 information = label_information[len(information_type_label_remove): ]
-                print('Account API Success: Retrieved {} Information'.format(information_type.replace('_', ' ').title()))
+                self.driver.logging.info('Retrieved {} Information'.format(information_type.replace('_', ' ').title()))
 
                 return information
 
             else:
-                print('Account API Error: Unable To Locate {} Information'.format(information_type.replace('_', ' ').title()))
+                self.driver.logging.error('Unable To Locate {} Information'.format(information_type.replace('_', ' ').title()))
 
         # check if invalid parameter input provided
         elif information_type not in self.information_type_xpaths:
-            print('Account API Error: Unable To Retrieve Information Because Invalid Input For Parameter Provided')
+            self.driver.logging.error('Unable To Retrieve Information Because Invalid Input For Parameter Provided')
 
         # check if user logged in
         elif not self.check_logged_in():
-            print('Account API Error: Unable To Retrieve {} Information Because User Not Logged In'.format(information_type.replace('_', ' ').title()))
+            self.driver.logging.error('Unable To Retrieve {} Information Because User Not Logged In'.format(information_type.replace('_', ' ').title()))
 
         return False
 

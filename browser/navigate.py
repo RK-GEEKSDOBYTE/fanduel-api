@@ -35,12 +35,12 @@ class NAVIGATE:
             # close plugin
             if plugin.is_enabled() and plugin.is_displayed():
                 plugin.click()
-                self.driver.logging.info('Closed Geo-Location Plugin Notification')
+                self.driver.logging.info('Closed The Geo-Location Plugin Notification')
 
                 return True
 
             else:
-                self.driver.logging.error('Unable To Close Active Geo-Location Plugin Notification')
+                self.driver.logging.error('Unable To Close The Active Geo-Location Plugin Notification')
 
                 return False
 
@@ -60,7 +60,7 @@ class NAVIGATE:
             # close modal window
             if modal_window.is_enabled() and modal_window.is_displayed():
                 modal_window.click()
-                self.driver.logging.info('Closed Modal Window')
+                self.driver.logging.info('Closed A Modal Window')
 
         return True
 
@@ -91,7 +91,7 @@ class NAVIGATE:
             else:
                 self.driver.logging.error('Unable To Locate A Tab Labeled {}'.format(tab_name))
         else:
-            self.driver.logging.error(' Unable To Click The {} Tab Because Invalid Parameter Input Provided'.format(tab_name))
+            self.driver.logging.error('Unable To Click The {} Tab Because Invalid Parameter Inputs Were Provided'.format(tab_name))
 
         return False
 
@@ -113,7 +113,7 @@ class NAVIGATE:
 
                 # check if toggle is already set to user input (active/inactive)
                 if (active and toggle_on) or (not active and not toggle_on):
-                    self.driver.logging.info('Confirmed Cashout Toggle Is Already Set To {}'.format(active))
+                    self.driver.logging.info('Confirmed The Cashout Toggle Is Already Set To {}'.format(active))
 
                     return True
 
@@ -121,12 +121,12 @@ class NAVIGATE:
                 # click toggle
                 if toggle.is_enabled() and toggle.is_displayed():
                     toggle.click()
-                    self.driver.logging.info('Switched Cashout Toggle To {}'.format(active))
+                    self.driver.logging.info('Switched The Cashout Toggle To {}'.format(active))
 
                     return True
 
                 else:
-                    self.driver.logging.error('Unable To Locate Clickable Cashout Toggle')
+                    self.driver.logging.error('Unable To Locate The Clickable Cashout Toggle')
             else:
                 self.driver.logging.error('Unable To Access The Cashout Toggle Because A User Is Not Logged In')
         else:
