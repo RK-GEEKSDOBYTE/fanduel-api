@@ -1,4 +1,5 @@
 # import packages
+import io
 import os
 import sys
 from shutil import rmtree
