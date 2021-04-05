@@ -15,7 +15,6 @@ author_email = 'ribeiro11075@gmail.com'
 author = 'David Ribeiro'
 requires_python = '>=3.6.0'
 version = '0.0.0'
-install_requires = ['sys', 'time', 'datetime', 're', 'requests', 'pandas', 'selenium', 'bs4']
 extras_require = {}
 include_package_data = True
 exclude = ['config']
